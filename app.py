@@ -76,3 +76,18 @@ if st.button("Calculate BMI"):
 
     else:
         st.error("BMI Category: Obese")
+if bmi < 18.5:
+        st.warning("BMI Category: Underweight")
+        st.write("Consider maintaining adequate calorie and nutrient intake.")
+
+    elif bmi < 25:
+        st.success("BMI Category: Normal")
+        st.write("Your BMI is within the normal range.")
+
+    elif bmi < 30:
+        st.warning("BMI Category: Overweight")
+        st.write("Regular exercise and a balanced diet may be helpful.")
+
+    else:
+        st.error("BMI Category: Obese")
+        st.write("Consider discussing weight management with a healthcare professional.")

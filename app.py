@@ -23,7 +23,7 @@ weight = st.number_input(
     min_value=1.0,
     max_value=700.0,
     value=None,
-    placeholder = "Enter weight"
+    placeholder="Enter weight"
 )
 
 # Height unit selection
@@ -37,10 +37,14 @@ height = st.number_input(
     min_value=1.0,
     max_value=300.0,
     value=None,
-    placeholder = "Enter height"
+    placeholder="Enter height"
 )
 
+
 if st.button("Calculate BMI"):
+
+    # Check whether all information is entered
+
     if not name:
         st.error("Please enter your name.")
 
@@ -53,45 +57,92 @@ if st.button("Calculate BMI"):
     elif height is None:
         st.error("Please enter your height.")
 
-    else: # Your BMI calculation starts here
-
-    # Convert weight to kg
-    if weight_unit == "lb":
-        weight_kg = weight * 0.453592
     else:
-        weight_kg = weight
 
-    # Convert height to meters
-    if height_unit == "cm":
-        height_m = height / 100
+        # Convert weight to kg
 
-    elif height_unit == "inches":
-        height_m = height * 0.0254
+        if weight_unit == "lb":
+            weight_kg = weight * 0.453592
+        else:
+            weight_kg = weight
 
-    else:
-        height_m = height
 
-    # Calculate BMI
-    bmi = weight_kg / (height_m * height_m)
+        # Convert height to meters
 
-    st.success(f"Hello {name}!")
+        if height_unit == "cm":
+            height_m = height / 100
 
-    st.write("Age:", age)
-    st.write("Weight:", round(weight_kg, 2), "kg")
-    st.write("Height:", round(height_m, 2), "m")
-    st.write("Your BMI is:", round(bmi, 2))
-    if bmi < 18.5:
-        st.warning("BMI Category: Underweight")
-        st.write("Consider maintaining adequate calorie and nutrient intake.")
+        elif height_unit == "inches":
+            height_m = height * 0.0254
 
-    elif bmi < 25:
-        st.success("BMI Category: Normal")
-        st.write("Your BMI is within the normal range. Regular exercise and a balanced diet will keep you in normal range for years")
+        else:
+            height_m = height
 
-    elif bmi < 30:
-        st.warning("BMI Category: Overweight")
-        st.write("Regular exercise and a balanced diet may be helpful.")
 
-    else:
-        st.error("BMI Category: Obese")
-        st.write("Consider discussing weight management with a healthcare professional.")
+        # Calculate BMI
+
+        bmi = weight_kg / (height_m * height_m)
+
+
+        # Display results
+
+        st.success(f"Hello {name}!")
+
+        st.write("Age:", age)
+
+        st.write(
+            "Weight:",
+            round(weight_kg, 2),
+            "kg"
+        )
+
+        st.write(
+            "Height:",
+            round(height_m, 2),
+            "m"
+        )
+
+        st.write(
+            "Your BMI is:",
+            round(bmi, 2)
+        )
+
+
+        # BMI category
+
+        if bmi < 18.5:
+
+            st.warning("BMI Category: Underweight")
+
+            st.write(
+                "Consider maintaining adequate calorie "
+                "and nutrient intake."
+            )
+
+        elif bmi < 25:
+
+            st.success("BMI Category: Normal")
+
+            st.write(
+                "Your BMI is within the normal range. "
+                "Regular exercise and a balanced diet "
+                "will help maintain your health."
+            )
+
+        elif bmi < 30:
+
+            st.warning("BMI Category: Overweight")
+
+            st.write(
+                "Regular exercise and a balanced diet "
+                "may be helpful."
+            )
+
+        else:
+
+            st.error("BMI Category: Obese")
+
+            st.write(
+                "Consider discussing weight management "
+                "with a healthcare professional."
+            )

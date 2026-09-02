@@ -70,7 +70,7 @@ if st.button("Calculate BMI"):
 
     elif bmi < 25:
         st.success("BMI Category: Normal")
-        st.write("Your BMI is within the normal range.")
+        st.write("Your BMI is within the normal range. Regular exercise and a balanced diet will kepp you in normal range for longer times")
 
     elif bmi < 30:
         st.warning("BMI Category: Overweight")

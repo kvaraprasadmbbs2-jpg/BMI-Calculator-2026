@@ -64,18 +64,6 @@ if st.button("Calculate BMI"):
     st.write("Weight:", round(weight_kg, 2), "kg")
     st.write("Height:", round(height_m, 2), "m")
     st.write("Your BMI is:", round(bmi, 2))
-
-    if bmi < 18.5:
-        st.warning("BMI Category: Underweight")
-
-    elif bmi < 25:
-        st.success("BMI Category: Normal")
-
-    elif bmi < 30:
-        st.warning("BMI Category: Overweight")
-
-    else:
-        st.error("BMI Category: Obese")
     if bmi < 18.5:
         st.warning("BMI Category: Underweight")
         st.write("Consider maintaining adequate calorie and nutrient intake.")

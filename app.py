@@ -9,7 +9,7 @@ age = st.number_input(
     min_value=1,
     max_value=120,
     value=None,
-    placeholder=Enter age
+    placeholder="Enter age"
 )
 
 # Weight unit selection

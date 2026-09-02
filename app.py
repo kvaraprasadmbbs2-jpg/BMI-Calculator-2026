@@ -76,7 +76,7 @@ if st.button("Calculate BMI"):
 
     else:
         st.error("BMI Category: Obese")
-if bmi < 18.5:
+    if bmi < 18.5:
         st.warning("BMI Category: Underweight")
         st.write("Consider maintaining adequate calorie and nutrient intake.")
 

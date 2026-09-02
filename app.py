@@ -53,8 +53,7 @@ if st.button("Calculate BMI"):
     elif height is None:
         st.error("Please enter your height.")
 
-    else:
-        # Your BMI calculation starts here
+    else: # Your BMI calculation starts here
 
     # Convert weight to kg
     if weight_unit == "lb":

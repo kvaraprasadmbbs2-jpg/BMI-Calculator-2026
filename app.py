@@ -8,7 +8,8 @@ age = st.number_input(
     "Enter your age",
     min_value=1,
     max_value=120,
-    value=none
+    value=None,
+    placeholder=Enter age
 )
 
 # Weight unit selection
@@ -21,7 +22,8 @@ weight = st.number_input(
     f"Enter your weight in {weight_unit}",
     min_value=1.0,
     max_value=700.0,
-    value=none
+    value=None,
+    placeholder = "Enter weight"
 )
 
 # Height unit selection
@@ -34,10 +36,25 @@ height = st.number_input(
     f"Enter your height in {height_unit}",
     min_value=1.0,
     max_value=300.0,
-    value=none
+    value=None,
+    placeholder = "Enter height"
 )
 
 if st.button("Calculate BMI"):
+    if not name:
+        st.error("Please enter your name.")
+
+    elif age is None:
+        st.error("Please enter your age.")
+
+    elif weight is None:
+        st.error("Please enter your weight.")
+
+    elif height is None:
+        st.error("Please enter your height.")
+
+    else:
+        # Your BMI calculation starts here
 
     # Convert weight to kg
     if weight_unit == "lb":

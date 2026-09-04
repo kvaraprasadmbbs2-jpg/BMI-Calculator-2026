@@ -157,3 +157,22 @@ activity = st.selectbox(
         "Extremely active (Athlete, heavy physical work, intense training)"
     ]
 )
+
+if sex == "Male":
+    bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5
+else:
+    bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161
+
+
+activity_factors = {
+    "Sedentary": 1.2,
+    "Lightly active": 1.375,
+    "Moderately active": 1.55,
+    "Very active": 1.725,
+    "Extremely active": 1.9
+}
+
+tdee = bmr * activity_factors[activity]
+
+st.write(f"**BMR:** {bmr:.0f} kcal/day")
+st.write(f"**TDEE:** {tdee:.0f} kcal/day")

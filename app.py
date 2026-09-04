@@ -655,4 +655,3 @@ st.caption(
     "⚠️ This calculator provides estimates for educational "
     "purposes and should not replace individualized medical advice."
 )
-```

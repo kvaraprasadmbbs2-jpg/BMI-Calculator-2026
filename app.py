@@ -358,3 +358,59 @@ if st.button("Calculate"):
             "TDEE is the estimated number of calories "
             "you need each day to maintain your current weight."
         )
+        # --------------------------------
+        # Calorie Targets
+        # --------------------------------
+        
+        st.write("## 🎯 Daily Calorie Targets")
+        
+        maintenance = tdee
+        mild_weight_loss = tdee * 0.90
+        moderate_weight_loss = tdee * 0.85
+        aggressive_weight_loss = tdee * 0.80
+        weight_gain = tdee * 1.10
+        
+        
+        # Create columns
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+        
+            st.metric(
+                "⚖️ Maintain Weight",
+                f"{maintenance:.0f} kcal/day"
+            )
+        
+            st.metric(
+                "🟢 Mild Weight Loss",
+                f"{mild_weight_loss:.0f} kcal/day",
+                "-10%"
+            )
+        
+            st.metric(
+                "🟠 Moderate Weight Loss",
+                f"{moderate_weight_loss:.0f} kcal/day",
+                "-15%"
+            )
+        
+        
+        with col2:
+        
+            st.metric(
+                "🔴 More Aggressive Weight Loss",
+                f"{aggressive_weight_loss:.0f} kcal/day",
+                "-20%"
+            )
+        
+            st.metric(
+                "🔵 Weight Gain",
+                f"{weight_gain:.0f} kcal/day",
+                "+10%"
+            )
+        
+        
+        st.info(
+            "These calorie targets are estimates based on your calculated TDEE. "
+            "Actual energy requirements can vary between individuals."
+        )

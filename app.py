@@ -1,15 +1,23 @@
 import streamlit as st
 
-# --------------------------------
-# Title
-# --------------------------------
+
+# ==========================================
+# TITLE
+# ==========================================
 
 st.title("🩺 BMI + BMR + TDEE Calculator")
 
+st.write(
+    "Calculate your BMI, BMR, estimated TDEE, "
+    "daily calorie targets and weight-loss goal."
+)
 
-# --------------------------------
-# Personal Information
-# --------------------------------
+
+# ==========================================
+# PERSONAL INFORMATION
+# ==========================================
+
+st.write("## 👤 Personal Information")
 
 name = st.text_input("Enter your name")
 
@@ -27,9 +35,11 @@ sex = st.selectbox(
 )
 
 
-# --------------------------------
-# Weight
-# --------------------------------
+# ==========================================
+# WEIGHT
+# ==========================================
+
+st.write("## ⚖️ Weight")
 
 weight_unit = st.selectbox(
     "Select weight unit",
@@ -45,9 +55,11 @@ weight = st.number_input(
 )
 
 
-# --------------------------------
-# Height
-# --------------------------------
+# ==========================================
+# HEIGHT
+# ==========================================
+
+st.write("## 📏 Height")
 
 height_unit = st.selectbox(
     "Select height unit",
@@ -63,9 +75,30 @@ height = st.number_input(
 )
 
 
-# --------------------------------
-# Activity Level
-# --------------------------------
+# ==========================================
+# TARGET WEIGHT
+# ==========================================
+
+st.write("## 🎯 Weight Goal")
+
+target_weight = st.number_input(
+    "Enter your target weight (kg)",
+    min_value=1.0,
+    max_value=700.0,
+    value=None,
+    placeholder="Enter target weight"
+)
+
+st.caption(
+    "Target weight should be entered in kilograms (kg)."
+)
+
+
+# ==========================================
+# ACTIVITY LEVEL
+# ==========================================
+
+st.write("## 🏃 Activity Level")
 
 activity = st.selectbox(
     "Select your activity level",
@@ -116,20 +149,20 @@ activity_factors = {
 }
 
 
-# Show description
+# Show activity description
 
 st.caption(activity_description[activity])
 
 
-# --------------------------------
-# Calculate Button
-# --------------------------------
+# ==========================================
+# CALCULATE BUTTON
+# ==========================================
 
 if st.button("Calculate"):
 
-    # --------------------------------
-    # Check Input
-    # --------------------------------
+    # ======================================
+    # INPUT VALIDATION
+    # ======================================
 
     if not name:
 
@@ -147,11 +180,15 @@ if st.button("Calculate"):
 
         st.error("Please enter your height.")
 
+    elif target_weight is None:
+
+        st.error("Please enter your target weight.")
+
     else:
 
-        # --------------------------------
-        # Convert Weight to kg
-        # --------------------------------
+        # ==================================
+        # CONVERT WEIGHT TO KG
+        # ==================================
 
         if weight_unit == "lb":
 
@@ -162,9 +199,9 @@ if st.button("Calculate"):
             weight_kg = weight
 
 
-        # --------------------------------
-        # Convert Height to meters
-        # --------------------------------
+        # ==================================
+        # CONVERT HEIGHT TO METERS
+        # ==================================
 
         if height_unit == "cm":
 
@@ -179,24 +216,22 @@ if st.button("Calculate"):
             height_m = height
 
 
-        # --------------------------------
-        # Convert Height to cm
-        # --------------------------------
+        # Convert height to cm
 
         height_cm = height_m * 100
 
 
-        # --------------------------------
-        # BMI Calculation
-        # --------------------------------
+        # ==================================
+        # BMI
+        # ==================================
 
         bmi = weight_kg / (height_m ** 2)
 
 
-        # --------------------------------
-        # BMR Calculation
+        # ==================================
+        # BMR
         # Mifflin-St Jeor Equation
-        # --------------------------------
+        # ==================================
 
         if sex == "Male":
 
@@ -217,54 +252,80 @@ if st.button("Calculate"):
             )
 
 
-        # --------------------------------
-        # TDEE Calculation
-        # --------------------------------
+        # ==================================
+        # TDEE
+        # ==================================
 
         activity_factor = activity_factors[activity]
 
         tdee = bmr * activity_factor
 
 
-        # --------------------------------
-        # Display Personal Information
-        # --------------------------------
+        # ==================================
+        # CALORIE TARGETS
+        # ==================================
+
+        maintenance = tdee
+
+        mild_weight_loss = tdee * 0.90
+
+        moderate_weight_loss = tdee * 0.85
+
+        aggressive_weight_loss = tdee * 0.80
+
+        weight_gain = tdee * 1.10
+
+
+        # ==================================
+        # DISPLAY PERSONAL INFORMATION
+        # ==================================
 
         st.success(f"Hello {name}! 👋")
 
         st.write("## 📋 Your Information")
 
-        st.write("**Age:**", age)
+        col1, col2 = st.columns(2)
 
-        st.write("**Sex:**", sex)
+        with col1:
 
-        st.write(
-            "**Weight:**",
-            round(weight_kg, 2),
-            "kg"
-        )
+            st.write(f"**Age:** {age}")
 
-        st.write(
-            "**Height:**",
-            round(height_m, 2),
-            "m"
-        )
+            st.write(f"**Sex:** {sex}")
+
+            st.write(
+                f"**Weight:** {weight_kg:.2f} kg"
+            )
+
+        with col2:
+
+            st.write(
+                f"**Height:** {height_m:.2f} m"
+            )
+
+            st.write(
+                f"**Activity:** {activity}"
+            )
+
+            st.write(
+                f"**Target weight:** {target_weight:.1f} kg"
+            )
 
 
-        # --------------------------------
-        # BMI Result
-        # --------------------------------
+        # ==================================
+        # BMI RESULT
+        # ==================================
 
         st.write("## ⚖️ BMI")
 
-        st.write(
-            f"**Your BMI is {bmi:.2f}**"
+        st.metric(
+            "Your BMI",
+            f"{bmi:.2f}"
         )
 
 
-        # --------------------------------
-        # BMI Category
-        # --------------------------------
+        # ==================================
+        # BMI CATEGORY
+        # ==================================
 
         if bmi < 18.5:
 
@@ -312,14 +373,15 @@ if st.button("Calculate"):
             )
 
 
-        # --------------------------------
-        # BMR Result
-        # --------------------------------
+        # ==================================
+        # BMR RESULT
+        # ==================================
 
         st.write("## 🔥 BMR")
 
-        st.write(
-            f"**{bmr:.0f} kcal/day**"
+        st.metric(
+            "Basal Metabolic Rate",
+            f"{bmr:.0f} kcal/day"
         )
 
         st.caption(
@@ -329,9 +391,9 @@ if st.button("Calculate"):
         )
 
 
-        # --------------------------------
-        # Activity Result
-        # --------------------------------
+        # ==================================
+        # ACTIVITY LEVEL
+        # ==================================
 
         st.write("## 🏃 Activity Level")
 
@@ -344,73 +406,253 @@ if st.button("Calculate"):
         )
 
 
-        # --------------------------------
-        # TDEE Result
-        # --------------------------------
+        # ==================================
+        # TDEE RESULT
+        # ==================================
 
         st.write("## 🔥 TDEE")
 
-        st.write(
-            f"**{tdee:.0f} kcal/day**"
+        st.metric(
+            "Estimated Daily Energy Requirement",
+            f"{tdee:.0f} kcal/day"
         )
 
         st.info(
             "TDEE is the estimated number of calories "
             "you need each day to maintain your current weight."
         )
-        # --------------------------------
-        # Calorie Targets
-        # --------------------------------
-        
+
+
+        # ==================================
+        # CALORIE TARGETS
+        # ==================================
+
         st.write("## 🎯 Daily Calorie Targets")
-        
-        maintenance = tdee
-        mild_weight_loss = tdee * 0.90
-        moderate_weight_loss = tdee * 0.85
-        aggressive_weight_loss = tdee * 0.80
-        weight_gain = tdee * 1.10
-        
-        
-        # Create columns
-        
+
+
         col1, col2 = st.columns(2)
-        
+
+
         with col1:
-        
+
             st.metric(
                 "⚖️ Maintain Weight",
                 f"{maintenance:.0f} kcal/day"
             )
-        
+
             st.metric(
                 "🟢 Mild Weight Loss",
                 f"{mild_weight_loss:.0f} kcal/day",
                 "-10%"
             )
-        
+
             st.metric(
                 "🟠 Moderate Weight Loss",
                 f"{moderate_weight_loss:.0f} kcal/day",
                 "-15%"
             )
-        
-        
+
+
         with col2:
-        
+
             st.metric(
                 "🔴 More Aggressive Weight Loss",
                 f"{aggressive_weight_loss:.0f} kcal/day",
                 "-20%"
             )
-        
+
             st.metric(
                 "🔵 Weight Gain",
                 f"{weight_gain:.0f} kcal/day",
                 "+10%"
             )
-        
-        
+
+
         st.info(
-            "These calorie targets are estimates based on your calculated TDEE. "
-            "Actual energy requirements can vary between individuals."
+            "These calorie targets are estimates based on "
+            "your calculated TDEE. Actual energy requirements "
+            "can vary between individuals."
         )
+
+
+        # ==================================
+        # WEIGHT LOSS / GAIN GOAL
+        # ==================================
+
+        st.write("## 🎯 Weight Goal")
+
+
+        weight_difference = weight_kg - target_weight
+
+
+        # ==================================
+        # IF TARGET IS LOWER
+        # ==================================
+
+        if weight_difference > 0:
+
+            st.write(
+                f"**Weight to lose: "
+                f"{weight_difference:.1f} kg**"
+            )
+
+
+            # Weight loss plan
+
+            weight_loss_plan = st.selectbox(
+                "Select your weight-loss plan",
+                [
+                    "Mild (10% calorie deficit)",
+                    "Moderate (15% calorie deficit)",
+                    "More aggressive (20% calorie deficit)"
+                ]
+            )
+
+
+            # Deficit factors
+
+            deficit_factors = {
+
+                "Mild (10% calorie deficit)": 0.10,
+
+                "Moderate (15% calorie deficit)": 0.15,
+
+                "More aggressive (20% calorie deficit)": 0.20
+            }
+
+
+            deficit_percentage = (
+                deficit_factors[weight_loss_plan]
+            )
+
+
+            # Daily calorie deficit
+
+            daily_deficit = (
+                tdee * deficit_percentage
+            )
+
+
+            # Daily calorie target
+
+            weight_loss_calories = (
+                tdee - daily_deficit
+            )
+
+
+            st.metric(
+                "🔥 Daily Calorie Target",
+                f"{weight_loss_calories:.0f} kcal/day"
+            )
+
+
+            # ==================================
+            # ESTIMATED WEIGHT LOSS TIME
+            # ==================================
+
+            # Approximation:
+            # 7,700 kcal ≈ 1 kg body fat
+
+            calories_to_lose = (
+                weight_difference * 7700
+            )
+
+
+            if daily_deficit > 0:
+
+                days_required = (
+                    calories_to_lose / daily_deficit
+                )
+
+                weeks_required = (
+                    days_required / 7
+                )
+
+                months_required = (
+                    weeks_required / 4.345
+                )
+
+
+                st.write("### ⏳ Estimated Time")
+
+
+                col1, col2, col3 = st.columns(3)
+
+
+                with col1:
+
+                    st.metric(
+                        "Days",
+                        f"{days_required:.0f}"
+                    )
+
+
+                with col2:
+
+                    st.metric(
+                        "Weeks",
+                        f"{weeks_required:.1f}"
+                    )
+
+
+                with col3:
+
+                    st.metric(
+                        "Months",
+                        f"{months_required:.1f}"
+                    )
+
+
+                st.info(
+                    "This is an approximate mathematical estimate. "
+                    "Actual weight loss may differ because of changes "
+                    "in water, glycogen, muscle mass, appetite and "
+                    "energy expenditure."
+                )
+
+
+        # ==================================
+        # IF TARGET IS SAME
+        # ==================================
+
+        elif weight_difference == 0:
+
+            st.success(
+                "🎯 Your target weight is the same "
+                "as your current weight."
+            )
+
+
+        # ==================================
+        # IF TARGET IS HIGHER
+        # ==================================
+
+        else:
+
+            weight_to_gain = abs(weight_difference)
+
+
+            st.write(
+                f"**Weight to gain: "
+                f"{weight_to_gain:.1f} kg**"
+            )
+
+
+            st.info(
+                "Your target weight is higher than your current "
+                "weight. A dedicated weight-gain calorie plan "
+                "can be added separately."
+            )
+
+
+# ==========================================
+# FOOTER
+# ==========================================
+
+st.divider()
+
+st.caption(
+    "⚠️ This calculator provides estimates for educational "
+    "purposes and should not replace individualized medical advice."
+)
+```

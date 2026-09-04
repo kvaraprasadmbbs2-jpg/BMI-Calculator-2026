@@ -146,3 +146,18 @@ if st.button("Calculate BMI"):
                 "Consider discussing weight management "
                 "with a healthcare professional."
             )
+            sex = st.selectbox(
+    "Select sex",
+    ["Male", "Female"]
+)
+
+activity = st.selectbox(
+    "Select activity level",
+    [
+        "Sedentary",
+        "Lightly active",
+        "Moderately active",
+        "Very active",
+        "Extremely active"
+    ]
+)

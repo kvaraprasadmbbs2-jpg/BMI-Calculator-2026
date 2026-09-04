@@ -1,12 +1,18 @@
-```python
 import streamlit as st
+
+# --------------------------------
+# Title
+# --------------------------------
 
 st.title("🩺 BMI + BMR + TDEE Calculator")
 
-# Name
+
+# --------------------------------
+# Personal Information
+# --------------------------------
+
 name = st.text_input("Enter your name")
 
-# Age
 age = st.number_input(
     "Enter your age",
     min_value=1,
@@ -15,13 +21,16 @@ age = st.number_input(
     placeholder="Enter age"
 )
 
-# Sex
 sex = st.selectbox(
     "Select sex",
     ["Male", "Female"]
 )
 
-# Weight unit selection
+
+# --------------------------------
+# Weight
+# --------------------------------
+
 weight_unit = st.selectbox(
     "Select weight unit",
     ["kg", "lb"]
@@ -35,7 +44,11 @@ weight = st.number_input(
     placeholder="Enter weight"
 )
 
-# Height unit selection
+
+# --------------------------------
+# Height
+# --------------------------------
+
 height_unit = st.selectbox(
     "Select height unit",
     ["cm", "m", "inches"]
@@ -49,74 +62,141 @@ height = st.number_input(
     placeholder="Enter height"
 )
 
-# Activity level
+
+# --------------------------------
+# Activity Level
+# --------------------------------
+
 activity = st.selectbox(
     "Select your activity level",
     [
-        "Sedentary (Desk job, little or no exercise)",
-        "Lightly active (Exercise 1–3 days/week, 5,000–7,500 steps/day)",
-        "Moderately active (Exercise 3–5 days/week, 7,500–12,000 steps/day)",
-        "Very active (Exercise 6–7 days/week, >12,000 steps/day)",
-        "Extremely active (Athlete, heavy physical work, intense training)"
+        "Sedentary",
+        "Lightly active",
+        "Moderately active",
+        "Very active",
+        "Extremely active"
     ]
 )
 
 
+# Activity descriptions
+
+activity_description = {
+
+    "Sedentary":
+        "Desk job, little or no exercise.",
+
+    "Lightly active":
+        "Exercise 1–3 days/week or mostly light physical activity.",
+
+    "Moderately active":
+        "Exercise 3–5 days/week, such as regular gym or brisk walking.",
+
+    "Very active":
+        "Exercise 6–7 days/week or high daily physical activity.",
+
+    "Extremely active":
+        "Intense training, athlete, or heavy physical work."
+}
+
+
+# Activity factors
+
+activity_factors = {
+
+    "Sedentary": 1.2,
+
+    "Lightly active": 1.375,
+
+    "Moderately active": 1.55,
+
+    "Very active": 1.725,
+
+    "Extremely active": 1.9
+}
+
+
+# Show description
+
+st.caption(activity_description[activity])
+
+
+# --------------------------------
+# Calculate Button
+# --------------------------------
+
 if st.button("Calculate"):
 
-    # Check whether all information is entered
+    # --------------------------------
+    # Check Input
+    # --------------------------------
 
     if not name:
+
         st.error("Please enter your name.")
 
     elif age is None:
+
         st.error("Please enter your age.")
 
     elif weight is None:
+
         st.error("Please enter your weight.")
 
     elif height is None:
+
         st.error("Please enter your height.")
 
     else:
 
         # --------------------------------
-        # Convert weight to kg
+        # Convert Weight to kg
         # --------------------------------
 
         if weight_unit == "lb":
+
             weight_kg = weight * 0.453592
+
         else:
+
             weight_kg = weight
 
 
         # --------------------------------
-        # Convert height to meters
+        # Convert Height to meters
         # --------------------------------
 
         if height_unit == "cm":
+
             height_m = height / 100
 
         elif height_unit == "inches":
+
             height_m = height * 0.0254
 
         else:
+
             height_m = height
 
 
         # --------------------------------
-        # Calculate BMI
+        # Convert Height to cm
+        # --------------------------------
+
+        height_cm = height_m * 100
+
+
+        # --------------------------------
+        # BMI Calculation
         # --------------------------------
 
         bmi = weight_kg / (height_m ** 2)
 
 
         # --------------------------------
-        # Calculate BMR
+        # BMR Calculation
         # Mifflin-St Jeor Equation
         # --------------------------------
-
-        height_cm = height_m * 100
 
         if sex == "Male":
 
@@ -138,25 +218,7 @@ if st.button("Calculate"):
 
 
         # --------------------------------
-        # Activity factors
-        # --------------------------------
-
-        activity_factors = {
-
-            "Sedentary (Desk job, little or no exercise)": 1.2,
-
-            "Lightly active (Exercise 1–3 days/week, 5,000–7,500 steps/day)": 1.375,
-
-            "Moderately active (Exercise 3–5 days/week, 7,500–12,000 steps/day)": 1.55,
-
-            "Very active (Exercise 6–7 days/week, >12,000 steps/day)": 1.725,
-
-            "Extremely active (Athlete, heavy physical work, intense training)": 1.9
-        }
-
-
-        # --------------------------------
-        # Calculate TDEE
+        # TDEE Calculation
         # --------------------------------
 
         activity_factor = activity_factors[activity]
@@ -165,56 +227,61 @@ if st.button("Calculate"):
 
 
         # --------------------------------
-        # Display basic information
+        # Display Personal Information
         # --------------------------------
 
-        st.success(f"Hello {name}!")
+        st.success(f"Hello {name}! 👋")
 
-        st.write("### 📋 Your Information")
+        st.write("## 📋 Your Information")
 
-        st.write("Age:", age)
+        st.write("**Age:**", age)
 
-        st.write("Sex:", sex)
+        st.write("**Sex:**", sex)
 
         st.write(
-            "Weight:",
+            "**Weight:**",
             round(weight_kg, 2),
             "kg"
         )
 
         st.write(
-            "Height:",
+            "**Height:**",
             round(height_m, 2),
             "m"
         )
 
 
         # --------------------------------
-        # Display BMI
+        # BMI Result
         # --------------------------------
 
-        st.write("### ⚖️ BMI")
+        st.write("## ⚖️ BMI")
 
         st.write(
-            "Your BMI is:",
-            round(bmi, 2)
+            f"**Your BMI is {bmi:.2f}**"
         )
 
 
-        # BMI category
+        # --------------------------------
+        # BMI Category
+        # --------------------------------
 
         if bmi < 18.5:
 
-            st.warning("BMI Category: Underweight")
+            st.warning(
+                "BMI Category: Underweight"
+            )
 
             st.write(
-                "Consider maintaining adequate calorie "
-                "and nutrient intake."
+                "Consider maintaining adequate "
+                "calorie and nutrient intake."
             )
 
         elif bmi < 25:
 
-            st.success("BMI Category: Normal")
+            st.success(
+                "BMI Category: Normal"
+            )
 
             st.write(
                 "Your BMI is within the normal range. "
@@ -224,7 +291,9 @@ if st.button("Calculate"):
 
         elif bmi < 30:
 
-            st.warning("BMI Category: Overweight")
+            st.warning(
+                "BMI Category: Overweight"
+            )
 
             st.write(
                 "Regular exercise and a balanced diet "
@@ -233,7 +302,9 @@ if st.button("Calculate"):
 
         else:
 
-            st.error("BMI Category: Obese")
+            st.error(
+                "BMI Category: Obesity"
+            )
 
             st.write(
                 "Consider discussing weight management "
@@ -242,34 +313,44 @@ if st.button("Calculate"):
 
 
         # --------------------------------
-        # Display BMR
+        # BMR Result
         # --------------------------------
 
-        st.write("### 🔥 BMR")
+        st.write("## 🔥 BMR")
 
         st.write(
-            f"Your Basal Metabolic Rate is approximately "
             f"**{bmr:.0f} kcal/day**"
+        )
+
+        st.caption(
+            "BMR is the estimated energy your body "
+            "needs at complete rest to maintain basic "
+            "physiological functions."
         )
 
 
         # --------------------------------
-        # Display Activity Level
+        # Activity Result
         # --------------------------------
 
-        st.write("### 🏃 Activity Level")
-
-        st.write(activity)
-
-
-        # --------------------------------
-        # Display TDEE
-        # --------------------------------
-
-        st.write("### 🔥 TDEE")
+        st.write("## 🏃 Activity Level")
 
         st.write(
-            f"Your estimated TDEE is approximately "
+            f"**{activity}**"
+        )
+
+        st.caption(
+            activity_description[activity]
+        )
+
+
+        # --------------------------------
+        # TDEE Result
+        # --------------------------------
+
+        st.write("## 🔥 TDEE")
+
+        st.write(
             f"**{tdee:.0f} kcal/day**"
         )
 
@@ -277,4 +358,3 @@ if st.button("Calculate"):
             "TDEE is the estimated number of calories "
             "you need each day to maintain your current weight."
         )
-```

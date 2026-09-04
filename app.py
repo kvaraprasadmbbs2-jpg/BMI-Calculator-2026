@@ -2,7 +2,7 @@ import streamlit as st
 
 
 # ==========================================
-# TITLE
+# PAGE TITLE
 # ==========================================
 
 st.title("🩺 BMI + BMR + TDEE Calculator")
@@ -11,6 +11,17 @@ st.write(
     "Calculate your BMI, BMR, estimated TDEE, "
     "daily calorie targets and weight-loss goal."
 )
+
+
+# ==========================================
+# SESSION STATE
+# ==========================================
+
+if "calculated" not in st.session_state:
+    st.session_state.calculated = False
+
+if "results" not in st.session_state:
+    st.session_state.results = {}
 
 
 # ==========================================
@@ -112,7 +123,9 @@ activity = st.selectbox(
 )
 
 
-# Activity descriptions
+# ==========================================
+# ACTIVITY DESCRIPTIONS
+# ==========================================
 
 activity_description = {
 
@@ -133,7 +146,9 @@ activity_description = {
 }
 
 
-# Activity factors
+# ==========================================
+# ACTIVITY FACTORS
+# ==========================================
 
 activity_factors = {
 
@@ -149,7 +164,9 @@ activity_factors = {
 }
 
 
-# Show activity description
+# ==========================================
+# SHOW ACTIVITY DESCRIPTION
+# ==========================================
 
 st.caption(activity_description[activity])
 
@@ -168,21 +185,31 @@ if st.button("Calculate"):
 
         st.error("Please enter your name.")
 
+        st.session_state.calculated = False
+
     elif age is None:
 
         st.error("Please enter your age.")
+
+        st.session_state.calculated = False
 
     elif weight is None:
 
         st.error("Please enter your weight.")
 
+        st.session_state.calculated = False
+
     elif height is None:
 
         st.error("Please enter your height.")
 
+        st.session_state.calculated = False
+
     elif target_weight is None:
 
         st.error("Please enter your target weight.")
+
+        st.session_state.calculated = False
 
     else:
 
@@ -216,7 +243,9 @@ if st.button("Calculate"):
             height_m = height
 
 
-        # Convert height to cm
+        # ==================================
+        # CONVERT HEIGHT TO CM
+        # ==================================
 
         height_cm = height_m * 100
 
@@ -277,372 +306,446 @@ if st.button("Calculate"):
 
 
         # ==================================
-        # DISPLAY PERSONAL INFORMATION
+        # SAVE RESULTS IN SESSION STATE
         # ==================================
 
-        st.success(f"Hello {name}! 👋")
+        st.session_state.results = {
 
-        st.write("## 📋 Your Information")
+            "name": name,
+            "age": age,
+            "sex": sex,
 
-        col1, col2 = st.columns(2)
+            "weight_kg": weight_kg,
 
-        with col1:
+            "height_m": height_m,
+            "height_cm": height_cm,
 
-            st.write(f"**Age:** {age}")
+            "target_weight": target_weight,
 
-            st.write(f"**Sex:** {sex}")
+            "activity": activity,
+            "activity_factor": activity_factor,
 
-            st.write(
-                f"**Weight:** {weight_kg:.2f} kg"
-            )
+            "bmi": bmi,
+            "bmr": bmr,
+            "tdee": tdee,
 
-        with col2:
+            "maintenance": maintenance,
+            "mild_weight_loss": mild_weight_loss,
+            "moderate_weight_loss": moderate_weight_loss,
+            "aggressive_weight_loss": aggressive_weight_loss,
+            "weight_gain": weight_gain
+        }
 
-            st.write(
-                f"**Height:** {height_m:.2f} m"
-            )
-
-            st.write(
-                f"**Activity:** {activity}"
-            )
-
-            st.write(
-                f"**Target weight:** {target_weight:.1f} kg"
-            )
-
-
-        # ==================================
-        # BMI RESULT
-        # ==================================
-
-        st.write("## ⚖️ BMI")
-
-        st.metric(
-            "Your BMI",
-            f"{bmi:.2f}"
-        )
+        st.session_state.calculated = True
 
 
-        # ==================================
-        # BMI CATEGORY
-        # ==================================
+# ==========================================
+# DISPLAY RESULTS
+# ==========================================
 
-        if bmi < 18.5:
+if st.session_state.calculated:
 
-            st.warning(
-                "BMI Category: Underweight"
-            )
+    # Get saved results
 
-            st.write(
-                "Consider maintaining adequate "
-                "calorie and nutrient intake."
-            )
+    results = st.session_state.results
 
-        elif bmi < 25:
+    name = results["name"]
+    age = results["age"]
+    sex = results["sex"]
 
-            st.success(
-                "BMI Category: Normal"
-            )
+    weight_kg = results["weight_kg"]
 
-            st.write(
-                "Your BMI is within the normal range. "
-                "Regular exercise and a balanced diet "
-                "will help maintain your health."
-            )
+    height_m = results["height_m"]
+    height_cm = results["height_cm"]
 
-        elif bmi < 30:
+    target_weight = results["target_weight"]
 
-            st.warning(
-                "BMI Category: Overweight"
-            )
+    activity = results["activity"]
 
-            st.write(
-                "Regular exercise and a balanced diet "
-                "may be helpful."
-            )
+    bmi = results["bmi"]
+    bmr = results["bmr"]
+    tdee = results["tdee"]
 
-        else:
-
-            st.error(
-                "BMI Category: Obesity"
-            )
-
-            st.write(
-                "Consider discussing weight management "
-                "with a healthcare professional."
-            )
+    maintenance = results["maintenance"]
+    mild_weight_loss = results["mild_weight_loss"]
+    moderate_weight_loss = results["moderate_weight_loss"]
+    aggressive_weight_loss = results["aggressive_weight_loss"]
+    weight_gain = results["weight_gain"]
 
 
-        # ==================================
-        # BMR RESULT
-        # ==================================
+    # ======================================
+    # DISPLAY PERSONAL INFORMATION
+    # ======================================
 
-        st.write("## 🔥 BMR")
+    st.success(f"Hello {name}! 👋")
 
-        st.metric(
-            "Basal Metabolic Rate",
-            f"{bmr:.0f} kcal/day"
-        )
+    st.write("## 📋 Your Information")
 
-        st.caption(
-            "BMR is the estimated energy your body "
-            "needs at complete rest to maintain basic "
-            "physiological functions."
-        )
+    col1, col2 = st.columns(2)
 
+    with col1:
 
-        # ==================================
-        # ACTIVITY LEVEL
-        # ==================================
+        st.write(f"**Age:** {age}")
 
-        st.write("## 🏃 Activity Level")
+        st.write(f"**Sex:** {sex}")
 
         st.write(
-            f"**{activity}**"
+            f"**Weight:** {weight_kg:.2f} kg"
         )
 
-        st.caption(
-            activity_description[activity]
+    with col2:
+
+        st.write(
+            f"**Height:** {height_m:.2f} m"
+        )
+
+        st.write(
+            f"**Activity:** {activity}"
+        )
+
+        st.write(
+            f"**Target weight:** {target_weight:.1f} kg"
         )
 
 
-        # ==================================
-        # TDEE RESULT
-        # ==================================
+    # ======================================
+    # BMI RESULT
+    # ======================================
 
-        st.write("## 🔥 TDEE")
+    st.write("## ⚖️ BMI")
+
+    st.metric(
+        "Your BMI",
+        f"{bmi:.2f}"
+    )
+
+
+    # ======================================
+    # BMI CATEGORY
+    # ======================================
+
+    if bmi < 18.5:
+
+        st.warning(
+            "BMI Category: Underweight"
+        )
+
+        st.write(
+            "Consider maintaining adequate "
+            "calorie and nutrient intake."
+        )
+
+    elif bmi < 25:
+
+        st.success(
+            "BMI Category: Normal"
+        )
+
+        st.write(
+            "Your BMI is within the normal range. "
+            "Regular exercise and a balanced diet "
+            "will help maintain your health."
+        )
+
+    elif bmi < 30:
+
+        st.warning(
+            "BMI Category: Overweight"
+        )
+
+        st.write(
+            "Regular exercise and a balanced diet "
+            "may be helpful."
+        )
+
+    else:
+
+        st.error(
+            "BMI Category: Obesity"
+        )
+
+        st.write(
+            "Consider discussing weight management "
+            "with a healthcare professional."
+        )
+
+
+    # ======================================
+    # BMR RESULT
+    # ======================================
+
+    st.write("## 🔥 BMR")
+
+    st.metric(
+        "Basal Metabolic Rate",
+        f"{bmr:.0f} kcal/day"
+    )
+
+    st.caption(
+        "BMR is the estimated energy your body "
+        "needs at complete rest to maintain basic "
+        "physiological functions."
+    )
+
+
+    # ======================================
+    # ACTIVITY LEVEL RESULT
+    # ======================================
+
+    st.write("## 🏃 Activity Level")
+
+    st.write(
+        f"**{activity}**"
+    )
+
+    st.caption(
+        activity_description[activity]
+    )
+
+
+    # ======================================
+    # TDEE RESULT
+    # ======================================
+
+    st.write("## 🔥 TDEE")
+
+    st.metric(
+        "Estimated Daily Energy Requirement",
+        f"{tdee:.0f} kcal/day"
+    )
+
+    st.info(
+        "TDEE is the estimated number of calories "
+        "you need each day to maintain your current weight."
+    )
+
+
+    # ======================================
+    # CALORIE TARGETS
+    # ======================================
+
+    st.write("## 🎯 Daily Calorie Targets")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
 
         st.metric(
-            "Estimated Daily Energy Requirement",
-            f"{tdee:.0f} kcal/day"
+            "⚖️ Maintain Weight",
+            f"{maintenance:.0f} kcal/day"
         )
 
-        st.info(
-            "TDEE is the estimated number of calories "
-            "you need each day to maintain your current weight."
+        st.metric(
+            "🟢 Mild Weight Loss",
+            f"{mild_weight_loss:.0f} kcal/day",
+            "-10%"
         )
 
+        st.metric(
+            "🟠 Moderate Weight Loss",
+            f"{moderate_weight_loss:.0f} kcal/day",
+            "-15%"
+        )
 
-        # ==================================
-        # CALORIE TARGETS
-        # ==================================
+    with col2:
 
-        st.write("## 🎯 Daily Calorie Targets")
+        st.metric(
+            "🔴 More Aggressive Weight Loss",
+            f"{aggressive_weight_loss:.0f} kcal/day",
+            "-20%"
+        )
 
+        st.metric(
+            "🔵 Weight Gain",
+            f"{weight_gain:.0f} kcal/day",
+            "+10%"
+        )
 
-        col1, col2 = st.columns(2)
-
-
-        with col1:
-
-            st.metric(
-                "⚖️ Maintain Weight",
-                f"{maintenance:.0f} kcal/day"
-            )
-
-            st.metric(
-                "🟢 Mild Weight Loss",
-                f"{mild_weight_loss:.0f} kcal/day",
-                "-10%"
-            )
-
-            st.metric(
-                "🟠 Moderate Weight Loss",
-                f"{moderate_weight_loss:.0f} kcal/day",
-                "-15%"
-            )
+    st.info(
+        "These calorie targets are estimates based on "
+        "your calculated TDEE. Actual energy requirements "
+        "can vary between individuals."
+    )
 
 
-        with col2:
+    # ======================================
+    # WEIGHT LOSS / GAIN GOAL
+    # ======================================
 
-            st.metric(
-                "🔴 More Aggressive Weight Loss",
-                f"{aggressive_weight_loss:.0f} kcal/day",
-                "-20%"
-            )
+    st.write("## 🎯 Weight Goal")
 
-            st.metric(
-                "🔵 Weight Gain",
-                f"{weight_gain:.0f} kcal/day",
-                "+10%"
-            )
+    weight_difference = weight_kg - target_weight
 
 
-        st.info(
-            "These calorie targets are estimates based on "
-            "your calculated TDEE. Actual energy requirements "
-            "can vary between individuals."
+    # ======================================
+    # IF TARGET IS LOWER
+    # ======================================
+
+    if weight_difference > 0:
+
+        st.write(
+            f"**Weight to lose: "
+            f"{weight_difference:.1f} kg**"
         )
 
 
         # ==================================
-        # WEIGHT LOSS / GAIN GOAL
+        # WEIGHT LOSS PLAN
         # ==================================
 
-        st.write("## 🎯 Weight Goal")
-
-
-        weight_difference = weight_kg - target_weight
+        weight_loss_plan = st.selectbox(
+            "Select your weight-loss plan",
+            [
+                "Mild (10% calorie deficit)",
+                "Moderate (15% calorie deficit)",
+                "More aggressive (20% calorie deficit)"
+            ]
+        )
 
 
         # ==================================
-        # IF TARGET IS LOWER
+        # DEFICIT FACTORS
         # ==================================
 
-        if weight_difference > 0:
+        deficit_factors = {
 
-            st.write(
-                f"**Weight to lose: "
-                f"{weight_difference:.1f} kg**"
+            "Mild (10% calorie deficit)": 0.10,
+
+            "Moderate (15% calorie deficit)": 0.15,
+
+            "More aggressive (20% calorie deficit)": 0.20
+        }
+
+
+        deficit_percentage = (
+            deficit_factors[weight_loss_plan]
+        )
+
+
+        # ==================================
+        # DAILY CALORIE DEFICIT
+        # ==================================
+
+        daily_deficit = (
+            tdee * deficit_percentage
+        )
+
+
+        # ==================================
+        # DAILY CALORIE TARGET
+        # ==================================
+
+        weight_loss_calories = (
+            tdee - daily_deficit
+        )
+
+
+        st.metric(
+            "🔥 Daily Calorie Target",
+            f"{weight_loss_calories:.0f} kcal/day"
+        )
+
+
+        st.caption(
+            f"Selected plan: **{weight_loss_plan}**"
+        )
+
+
+        # ==================================
+        # ESTIMATED WEIGHT LOSS TIME
+        # ==================================
+
+        # Approximation:
+        # 7,700 kcal ≈ 1 kg body fat
+
+        calories_to_lose = (
+            weight_difference * 7700
+        )
+
+
+        if daily_deficit > 0:
+
+            days_required = (
+                calories_to_lose / daily_deficit
             )
 
-
-            # Weight loss plan
-
-            weight_loss_plan = st.selectbox(
-                "Select your weight-loss plan",
-                [
-                    "Mild (10% calorie deficit)",
-                    "Moderate (15% calorie deficit)",
-                    "More aggressive (20% calorie deficit)"
-                ]
+            weeks_required = (
+                days_required / 7
             )
 
-
-            # Deficit factors
-
-            deficit_factors = {
-
-                "Mild (10% calorie deficit)": 0.10,
-
-                "Moderate (15% calorie deficit)": 0.15,
-
-                "More aggressive (20% calorie deficit)": 0.20
-            }
-
-
-            deficit_percentage = (
-                deficit_factors[weight_loss_plan]
-            )
-
-
-            # Daily calorie deficit
-
-            daily_deficit = (
-                tdee * deficit_percentage
-            )
-
-
-            # Daily calorie target
-
-            weight_loss_calories = (
-                tdee - daily_deficit
-            )
-
-
-            st.metric(
-                "🔥 Daily Calorie Target",
-                f"{weight_loss_calories:.0f} kcal/day"
+            months_required = (
+                weeks_required / 4.345
             )
 
 
             # ==================================
-            # ESTIMATED WEIGHT LOSS TIME
+            # ESTIMATED TIME
             # ==================================
 
-            # Approximation:
-            # 7,700 kcal ≈ 1 kg body fat
+            st.write("### ⏳ Estimated Time")
 
-            calories_to_lose = (
-                weight_difference * 7700
-            )
+            col1, col2, col3 = st.columns(3)
 
+            with col1:
 
-            if daily_deficit > 0:
-
-                days_required = (
-                    calories_to_lose / daily_deficit
+                st.metric(
+                    "Days",
+                    f"{days_required:.0f}"
                 )
 
-                weeks_required = (
-                    days_required / 7
+            with col2:
+
+                st.metric(
+                    "Weeks",
+                    f"{weeks_required:.1f}"
                 )
 
-                months_required = (
-                    weeks_required / 4.345
+            with col3:
+
+                st.metric(
+                    "Months",
+                    f"{months_required:.1f}"
                 )
-
-
-                st.write("### ⏳ Estimated Time")
-
-
-                col1, col2, col3 = st.columns(3)
-
-
-                with col1:
-
-                    st.metric(
-                        "Days",
-                        f"{days_required:.0f}"
-                    )
-
-
-                with col2:
-
-                    st.metric(
-                        "Weeks",
-                        f"{weeks_required:.1f}"
-                    )
-
-
-                with col3:
-
-                    st.metric(
-                        "Months",
-                        f"{months_required:.1f}"
-                    )
-
-
-                st.info(
-                    "This is an approximate mathematical estimate. "
-                    "Actual weight loss may differ because of changes "
-                    "in water, glycogen, muscle mass, appetite and "
-                    "energy expenditure."
-                )
-
-
-        # ==================================
-        # IF TARGET IS SAME
-        # ==================================
-
-        elif weight_difference == 0:
-
-            st.success(
-                "🎯 Your target weight is the same "
-                "as your current weight."
-            )
-
-
-        # ==================================
-        # IF TARGET IS HIGHER
-        # ==================================
-
-        else:
-
-            weight_to_gain = abs(weight_difference)
-
-
-            st.write(
-                f"**Weight to gain: "
-                f"{weight_to_gain:.1f} kg**"
-            )
 
 
             st.info(
-                "Your target weight is higher than your current "
-                "weight. A dedicated weight-gain calorie plan "
-                "can be added separately."
+                "This is an approximate mathematical estimate. "
+                "Actual weight loss may differ because of changes "
+                "in water, glycogen, muscle mass, appetite and "
+                "energy expenditure."
             )
+
+
+    # ======================================
+    # IF TARGET IS SAME
+    # ======================================
+
+    elif weight_difference == 0:
+
+        st.success(
+            "🎯 Your target weight is the same "
+            "as your current weight."
+        )
+
+
+    # ======================================
+    # IF TARGET IS HIGHER
+    # ======================================
+
+    else:
+
+        weight_to_gain = abs(weight_difference)
+
+        st.write(
+            f"**Weight to gain: "
+            f"{weight_to_gain:.1f} kg**"
+        )
+
+        st.info(
+            "Your target weight is higher than your current "
+            "weight. A dedicated weight-gain calorie plan "
+            "can be added separately."
+        )
 
 
 # ==========================================

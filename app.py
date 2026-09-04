@@ -146,18 +146,14 @@ if st.button("Calculate BMI"):
                 "Consider discussing weight management "
                 "with a healthcare professional."
             )
-            sex = st.selectbox(
-    "Select sex",
-    ["Male", "Female"]
-)
 
 activity = st.selectbox(
-    "Select activity level",
+    "Select your activity level",
     [
-        "Sedentary",
-        "Lightly active",
-        "Moderately active",
-        "Very active",
-        "Extremely active"
+        "Sedentary (Desk job, little or no exercise)",
+        "Lightly active (Exercise 1–3 days/week, 5,000–7,500 steps/day)",
+        "Moderately active (Exercise 3–5 days/week, 7,500–12,000 steps/day)",
+        "Very active (Exercise 6–7 days/week, >12,000 steps/day)",
+        "Extremely active (Athlete, heavy physical work, intense training)"
     ]
 )

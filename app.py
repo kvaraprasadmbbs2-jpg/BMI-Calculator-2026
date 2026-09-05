@@ -244,8 +244,11 @@ if st.button("Calculate"):
         # ==================================
 
         if weight_unit == "lb":
+
             weight_kg = weight * 0.453592
+
         else:
+
             weight_kg = weight
 
 
@@ -360,6 +363,8 @@ if st.button("Calculate"):
         }
 
         st.session_state.calculated = True
+
+        # New calculation = not yet saved
         st.session_state.saved = False
 
 
@@ -370,6 +375,11 @@ if st.button("Calculate"):
 if st.session_state.calculated:
 
     results = st.session_state.results
+
+
+    # ======================================
+    # GET RESULTS
+    # ======================================
 
     name = results["name"]
     age = results["age"]
@@ -442,9 +452,15 @@ if st.session_state.calculated:
     )
 
 
+    # ======================================
+    # BMI CATEGORY
+    # ======================================
+
     if bmi < 18.5:
 
-        st.warning("BMI Category: Underweight")
+        st.warning(
+            "BMI Category: Underweight"
+        )
 
         st.write(
             "Consider maintaining adequate "
@@ -453,7 +469,9 @@ if st.session_state.calculated:
 
     elif bmi < 25:
 
-        st.success("BMI Category: Normal")
+        st.success(
+            "BMI Category: Normal"
+        )
 
         st.write(
             "Your BMI is within the normal range. "
@@ -463,7 +481,9 @@ if st.session_state.calculated:
 
     elif bmi < 30:
 
-        st.warning("BMI Category: Overweight")
+        st.warning(
+            "BMI Category: Overweight"
+        )
 
         st.write(
             "Regular exercise and a balanced diet "
@@ -472,7 +492,9 @@ if st.session_state.calculated:
 
     else:
 
-        st.error("BMI Category: Obesity")
+        st.error(
+            "BMI Category: Obesity"
+        )
 
         st.write(
             "Consider discussing weight management "
@@ -499,12 +521,14 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # ACTIVITY
+    # ACTIVITY LEVEL RESULT
     # ======================================
 
     st.write("## 🏃 Activity Level")
 
-    st.write(f"**{activity}**")
+    st.write(
+        f"**{activity}**"
+    )
 
     st.caption(
         activity_description[activity]
@@ -597,6 +621,10 @@ if st.session_state.calculated:
         )
 
 
+        # ==================================
+        # WEIGHT LOSS PLAN
+        # ==================================
+
         weight_loss_plan = st.selectbox(
             "Select your weight-loss plan",
             [
@@ -607,6 +635,10 @@ if st.session_state.calculated:
             key="weight_loss_plan"
         )
 
+
+        # ==================================
+        # DEFICIT FACTORS
+        # ==================================
 
         deficit_factors = {
 
@@ -623,10 +655,18 @@ if st.session_state.calculated:
         ]
 
 
+        # ==================================
+        # DAILY DEFICIT
+        # ==================================
+
         daily_deficit = (
             tdee * deficit_percentage
         )
 
+
+        # ==================================
+        # DAILY CALORIE TARGET
+        # ==================================
 
         weight_loss_calories = (
             tdee - daily_deficit
@@ -716,6 +756,7 @@ if st.session_state.calculated:
 
         months_required = 0
 
+
         st.success(
             "🎯 Your target weight is the same "
             "as your current weight."
@@ -740,6 +781,7 @@ if st.session_state.calculated:
 
         months_required = 0
 
+
         st.write(
             f"**Weight to gain: "
             f"{weight_to_gain:.1f} kg**"
@@ -753,7 +795,7 @@ if st.session_state.calculated:
 
 
     # ==========================================
-    # SAVE TO GOOGLE SHEET
+    # CONFIRM & SAVE
     # ==========================================
 
     st.divider()
@@ -761,27 +803,37 @@ if st.session_state.calculated:
     st.write("## 💾 Save Results")
 
     st.write(
-        "Click the button below to save this calculation "
-        "to the BMI Calculator Google Sheet."
+        "Review your results and click the button below "
+        "to save this calculation."
     )
 
 
-    if st.button(
-        "💾 Save Results to Google Sheet",
-        key="save_to_google_sheet"
-    ):
+    if st.session_state.saved:
 
-        if st.session_state.saved:
+        st.success(
+            "✅ This calculation has already been saved "
+            "to Google Sheet."
+        )
 
-            st.info(
-                "These results have already been saved."
-            )
+    else:
 
-        else:
+        if st.button(
+            "✅ Confirm & Save Results",
+            key="confirm_save"
+        ):
 
             try:
 
+                # ==================================
+                # CONNECT TO GOOGLE SHEET
+                # ==================================
+
                 worksheet = get_google_sheet()
+
+
+                # ==================================
+                # DATE & TIME
+                # ==================================
 
                 now = datetime.now()
 
@@ -789,6 +841,10 @@ if st.session_state.calculated:
 
                 time = now.strftime("%H:%M:%S")
 
+
+                # ==================================
+                # CREATE ROW
+                # ==================================
 
                 row = [
 
@@ -825,16 +881,25 @@ if st.session_state.calculated:
                 ]
 
 
+                # ==================================
+                # ADD ROW TO GOOGLE SHEET
+                # ==================================
+
                 worksheet.append_row(
                     row,
                     value_input_option="USER_ENTERED"
                 )
 
 
+                # ==================================
+                # MARK AS SAVED
+                # ==================================
+
                 st.session_state.saved = True
 
+
                 st.success(
-                    "✅ Results successfully saved "
+                    "🎉 Results successfully saved "
                     "to Google Sheet!"
                 )
 

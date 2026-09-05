@@ -6,7 +6,6 @@ from zoneinfo import ZoneInfo
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 import io
 
@@ -36,12 +35,6 @@ st.markdown("""
 
 h1 {
     text-align: center;
-}
-
-.result-box {
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 10px;
 }
 
 </style>
@@ -99,123 +92,169 @@ def create_pdf(data):
 
     story.append(
         Paragraph(
-            "🩺 BMI & Weight Management Report",
+            "BMI & Weight Management Report",
             title_style
         )
     )
 
     story.append(Spacer(1, 20))
 
-    story.append(Paragraph(
-        f"<b>Name:</b> {data['name']}",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Name:</b> {data['name']}",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>Date:</b> {data['date']}",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Date:</b> {data['date']}",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>Time:</b> {data['time']}",
-        styles["Normal"]
-    ))
-
-    story.append(Spacer(1, 15))
-
-    story.append(Paragraph(
-        f"<b>Age:</b> {data['age']} years",
-        styles["Normal"]
-    ))
-
-    story.append(Paragraph(
-        f"<b>Sex:</b> {data['sex']}",
-        styles["Normal"]
-    ))
-
-    story.append(Paragraph(
-        f"<b>Weight:</b> {data['weight_kg']:.1f} kg",
-        styles["Normal"]
-    ))
-
-    story.append(Paragraph(
-        f"<b>Height:</b> {data['height_cm']:.1f} cm",
-        styles["Normal"]
-    ))
-
-    story.append(Paragraph(
-        f"<b>Target Weight:</b> {data['target_weight']:.1f} kg",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Time:</b> {data['time']}",
+            styles["Normal"]
+        )
+    )
 
     story.append(Spacer(1, 15))
 
-    story.append(Paragraph(
-        f"<b>BMI:</b> {data['bmi']:.1f}",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Age:</b> {data['age']} years",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>BMI Category:</b> {data['bmi_category']}",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Sex:</b> {data['sex']}",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>BMR:</b> {data['bmr']:.0f} kcal/day",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Weight:</b> {data['weight_kg']:.1f} kg",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>TDEE:</b> {data['tdee']:.0f} kcal/day",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Height:</b> {data['height_cm']:.1f} cm",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Spacer(1, 15))
-
-    story.append(Paragraph(
-        f"<b>Activity Level:</b> {data['activity']}",
-        styles["Normal"]
-    ))
-
-    story.append(Paragraph(
-        f"<b>Weight Loss Plan:</b> {data['plan']}",
-        styles["Normal"]
-    ))
-
-    story.append(Paragraph(
-        f"<b>Daily Calorie Target:</b> {data['daily_target']:.0f} kcal/day",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>Target Weight:</b> {data['target_weight']:.1f} kg",
+            styles["Normal"]
+        )
+    )
 
     story.append(Spacer(1, 15))
 
-    story.append(Paragraph(
-        f"<b>Estimated Weight to Lose:</b> "
-        f"{data['weight_to_lose']:.1f} kg",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>BMI:</b> {data['bmi']:.1f}",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>Estimated Days:</b> {data['estimated_days']}",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>BMI Category:</b> {data['bmi_category']}",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>Estimated Weeks:</b> {data['estimated_weeks']}",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>BMR:</b> {data['bmr']:.0f} kcal/day",
+            styles["Normal"]
+        )
+    )
 
-    story.append(Paragraph(
-        f"<b>Estimated Months:</b> {data['estimated_months']}",
-        styles["Normal"]
-    ))
+    story.append(
+        Paragraph(
+            f"<b>TDEE:</b> {data['tdee']:.0f} kcal/day",
+            styles["Normal"]
+        )
+    )
+
+    story.append(Spacer(1, 15))
+
+    story.append(
+        Paragraph(
+            f"<b>Activity Level:</b> {data['activity']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Activity Description:</b> {data['activity_description']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Weight Loss Plan:</b> {data['plan']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Daily Calorie Target:</b> "
+            f"{data['daily_target']:.0f} kcal/day",
+            styles["Normal"]
+        )
+    )
+
+    story.append(Spacer(1, 15))
+
+    story.append(
+        Paragraph(
+            f"<b>Estimated Weight to Lose:</b> "
+            f"{data['weight_to_lose']:.1f} kg",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Estimated Days:</b> {data['estimated_days']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Estimated Weeks:</b> {data['estimated_weeks']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Estimated Months:</b> {data['estimated_months']}",
+            styles["Normal"]
+        )
+    )
 
     story.append(Spacer(1, 25))
 
     story.append(
         Paragraph(
-            "This calculator provides an estimate for educational purposes "
-            "and should not replace individualized medical advice.",
+            "This calculator provides an estimate for educational "
+            "purposes and should not replace individualized medical advice.",
             styles["Normal"]
         )
     )
@@ -225,6 +264,29 @@ def create_pdf(data):
     buffer.seek(0)
 
     return buffer
+
+
+# =========================================================
+# ACTIVITY LEVEL DESCRIPTIONS
+# =========================================================
+
+activity_descriptions = {
+
+    "Sedentary":
+        "Little or no exercise; mostly sitting or desk-based activity.",
+
+    "Lightly active":
+        "Light exercise or walking 1–3 days per week.",
+
+    "Moderately active":
+        "Moderate exercise or physical activity 3–5 days per week.",
+
+    "Very active":
+        "Hard exercise or physical activity 6–7 days per week.",
+
+    "Extra active":
+        "Very hard daily exercise, physical job, or intensive training."
+}
 
 
 # =========================================================
@@ -365,22 +427,31 @@ activity = st.selectbox(
 
 
 # =========================================================
-# INITIALIZE SESSION STATE
+# SESSION STATE
 # =========================================================
 
 if "base_calculation" not in st.session_state:
+
     st.session_state["base_calculation"] = None
 
+
 if "plan_selection" not in st.session_state:
+
     st.session_state["plan_selection"] = "Select a plan"
 
+
 if "saved_base_id" not in st.session_state:
+
     st.session_state["saved_base_id"] = None
 
+
 if "saved_row_number" not in st.session_state:
+
     st.session_state["saved_row_number"] = None
 
+
 if "calculation" not in st.session_state:
+
     st.session_state["calculation"] = None
 
 
@@ -395,29 +466,32 @@ calculate = st.button(
 
 
 # =========================================================
-# PERFORM BASIC CALCULATION
+# BASIC CALCULATION
 # =========================================================
 
 if calculate:
 
-    # -----------------------------
+    # -----------------------------------------------------
     # VALIDATION
-    # -----------------------------
+    # -----------------------------------------------------
 
     if not name.strip():
 
         st.error("Please enter your name.")
         st.stop()
 
+
     if age is None:
 
         st.error("Please enter your age.")
         st.stop()
 
+
     if weight is None:
 
         st.error("Please enter your weight.")
         st.stop()
+
 
     if height_unit == "cm":
 
@@ -435,7 +509,10 @@ if calculate:
             st.error("Please enter both feet and inches.")
             st.stop()
 
-        height_cm = (float(feet) * 30.48) + (float(inches) * 2.54)
+        height_cm = (
+            float(feet) * 30.48
+            + float(inches) * 2.54
+        )
 
 
     if target_weight is None:
@@ -444,9 +521,9 @@ if calculate:
         st.stop()
 
 
-    # -----------------------------
-    # WEIGHT CONVERSION
-    # -----------------------------
+    # -----------------------------------------------------
+    # WEIGHT TO KG
+    # -----------------------------------------------------
 
     if weight_unit == "kg":
 
@@ -457,9 +534,9 @@ if calculate:
         weight_kg = float(weight) * 0.453592
 
 
-    # -----------------------------
-    # TARGET WEIGHT CONVERSION
-    # -----------------------------
+    # -----------------------------------------------------
+    # TARGET WEIGHT TO KG
+    # -----------------------------------------------------
 
     if target_weight_unit == "kg":
 
@@ -470,18 +547,18 @@ if calculate:
         target_weight_kg = float(target_weight) * 0.453592
 
 
-    # -----------------------------
+    # -----------------------------------------------------
     # BMI
-    # -----------------------------
+    # -----------------------------------------------------
 
     height_m = height_cm / 100
 
     bmi = weight_kg / (height_m ** 2)
 
 
-    # -----------------------------
+    # -----------------------------------------------------
     # BMI CATEGORY
-    # -----------------------------
+    # -----------------------------------------------------
 
     if bmi < 18.5:
 
@@ -500,10 +577,9 @@ if calculate:
         bmi_category = "Obesity"
 
 
-    # -----------------------------
-    # BMR
-    # Mifflin-St Jeor
-    # -----------------------------
+    # -----------------------------------------------------
+    # BMR — MIFFLIN ST JEOR
+    # -----------------------------------------------------
 
     if sex == "Male":
 
@@ -524,9 +600,9 @@ if calculate:
         )
 
 
-    # -----------------------------
+    # -----------------------------------------------------
     # ACTIVITY MULTIPLIER
-    # -----------------------------
+    # -----------------------------------------------------
 
     activity_multipliers = {
 
@@ -547,11 +623,11 @@ if calculate:
     tdee = bmr * activity_factor
 
 
-    # -----------------------------
-    # STORE BASE CALCULATION
-    # -----------------------------
+    # -----------------------------------------------------
+    # STORE BASIC CALCULATION
+    # -----------------------------------------------------
 
-    base_calculation = {
+    st.session_state["base_calculation"] = {
 
         "name": name.strip(),
 
@@ -567,6 +643,9 @@ if calculate:
 
         "activity": activity,
 
+        "activity_description":
+            activity_descriptions[activity],
+
         "bmi": bmi,
 
         "bmi_category": bmi_category,
@@ -577,14 +656,13 @@ if calculate:
     }
 
 
-    st.session_state["base_calculation"] = base_calculation
-
-    # Reset plan when a NEW calculation is performed
+    # Reset plan
     st.session_state["plan_selection"] = "Select a plan"
 
     # Reset Google Sheet tracking
     st.session_state["saved_base_id"] = None
     st.session_state["saved_row_number"] = None
+
     st.session_state["calculation"] = None
 
 
@@ -638,6 +716,24 @@ if st.session_state["base_calculation"] is not None:
             "TDEE",
             f"{data['tdee']:.0f} kcal/day"
         )
+
+
+    # =====================================================
+    # ACTIVITY LEVEL
+    # =====================================================
+
+    st.markdown("---")
+
+    st.subheader("🏃 Activity Level")
+
+    st.write(
+        f"**Activity Level:** {data['activity']}"
+    )
+
+    st.info(
+        f"**Description:** "
+        f"{data['activity_description']}"
+    )
 
 
     # =====================================================
@@ -702,7 +798,6 @@ if st.session_state["base_calculation"] is not None:
         daily_target = data["tdee"] - calorie_deficit
 
 
-        # Safety floor for calculated target
         if daily_target < 1200:
 
             daily_target = 1200
@@ -713,37 +808,42 @@ if st.session_state["base_calculation"] is not None:
         # -------------------------------------------------
 
         weight_to_lose = (
-            data["weight_kg"] - data["target_weight"]
+            data["weight_kg"]
+            - data["target_weight"]
         )
 
 
         # -------------------------------------------------
-        # ESTIMATED TIME
+        # ESTIMATED TIMELINE
         # -------------------------------------------------
 
-        if weight_to_lose > 0 and calorie_deficit > 0:
+        if weight_to_lose > 0:
 
-            # Approximate 7,700 kcal per kg of body fat
+            total_calories = (
+                weight_to_lose * 7700
+            )
 
-            total_calories = weight_to_lose * 7700
+            estimated_days = (
+                total_calories / calorie_deficit
+            )
 
-            estimated_days = total_calories / calorie_deficit
+            estimated_weeks = (
+                estimated_days / 7
+            )
 
-            estimated_weeks = estimated_days / 7
-
-            estimated_months = estimated_days / 30.44
+            estimated_months = (
+                estimated_days / 30.44
+            )
 
         else:
 
             estimated_days = 0
-
             estimated_weeks = 0
-
             estimated_months = 0
 
 
         # =================================================
-        # DISPLAY DAILY TARGET
+        # DAILY CALORIE TARGET
         # =================================================
 
         st.markdown("---")
@@ -758,7 +858,7 @@ if st.session_state["base_calculation"] is not None:
 
 
         # =================================================
-        # DISPLAY WEIGHT LOSS
+        # WEIGHT LOSS TIMELINE
         # =================================================
 
         st.subheader("⏱️ Estimated Weight-Loss Timeline")
@@ -782,13 +882,12 @@ if st.session_state["base_calculation"] is not None:
 
             st.info(
                 "Your target weight is higher than your "
-                "current weight. Weight-loss timeline is "
-                "not applicable."
+                "current weight."
             )
 
 
         # -------------------------------------------------
-        # ALWAYS SHOW DAYS / WEEKS / MONTHS
+        # DAYS / WEEKS / MONTHS
         # -------------------------------------------------
 
         col1, col2, col3 = st.columns(3)
@@ -846,7 +945,7 @@ if st.session_state["base_calculation"] is not None:
 
 
         # =================================================
-        # DATE & TIME — IST
+        # IST DATE & TIME
         # =================================================
 
         now = datetime.now(
@@ -863,7 +962,7 @@ if st.session_state["base_calculation"] is not None:
 
 
         # =================================================
-        # COMPLETE CALCULATION DATA
+        # COMPLETE CALCULATION
         # =================================================
 
         calculation = {
@@ -882,9 +981,13 @@ if st.session_state["base_calculation"] is not None:
 
             "activity": data["activity"],
 
+            "activity_description":
+                data["activity_description"],
+
             "bmi": data["bmi"],
 
-            "bmi_category": data["bmi_category"],
+            "bmi_category":
+                data["bmi_category"],
 
             "bmr": data["bmr"],
 
@@ -894,21 +997,20 @@ if st.session_state["base_calculation"] is not None:
 
             "daily_target": daily_target,
 
-            "weight_to_lose": weight_to_lose,
+            "weight_to_lose":
+                weight_to_lose,
 
-            "estimated_days": round(
-                estimated_days
-            ) if weight_to_lose > 0 else 0,
+            "estimated_days":
+                round(estimated_days)
+                if weight_to_lose > 0 else 0,
 
-            "estimated_weeks": round(
-                estimated_weeks,
-                1
-            ) if weight_to_lose > 0 else 0,
+            "estimated_weeks":
+                round(estimated_weeks, 1)
+                if weight_to_lose > 0 else 0,
 
-            "estimated_months": round(
-                estimated_months,
-                1
-            ) if weight_to_lose > 0 else 0,
+            "estimated_months":
+                round(estimated_months, 1)
+                if weight_to_lose > 0 else 0,
 
             "date": report_date,
 
@@ -920,7 +1022,7 @@ if st.session_state["base_calculation"] is not None:
 
 
         # =================================================
-        # AUTOMATIC GOOGLE SHEET SAVE
+        # UNIQUE BASE CALCULATION ID
         # =================================================
 
         base_id = (
@@ -941,9 +1043,9 @@ if st.session_state["base_calculation"] is not None:
         )
 
 
-        # -------------------------------------------------
-        # FIRST SAVE
-        # -------------------------------------------------
+        # =================================================
+        # FIRST AUTOMATIC SAVE
+        # =================================================
 
         if st.session_state["saved_base_id"] != base_id:
 
@@ -964,29 +1066,49 @@ if st.session_state["base_calculation"] is not None:
 
                     data["sex"],
 
-                    round(data["weight_kg"], 2),
+                    round(
+                        data["weight_kg"], 2
+                    ),
 
-                    round(data["height_cm"], 2),
+                    round(
+                        data["height_cm"], 2
+                    ),
 
-                    round(data["target_weight"], 2),
+                    round(
+                        data["target_weight"], 2
+                    ),
 
                     data["activity"],
 
-                    round(data["bmi"], 2),
+                    round(
+                        data["bmi"], 2
+                    ),
 
-                    round(data["bmr"], 0),
+                    round(
+                        data["bmr"], 0
+                    ),
 
-                    round(data["tdee"], 0),
+                    round(
+                        data["tdee"], 0
+                    ),
 
                     plan,
 
-                    round(daily_target, 0),
+                    round(
+                        daily_target, 0
+                    ),
 
-                    round(estimated_days, 0),
+                    round(
+                        estimated_days, 0
+                    ),
 
-                    round(estimated_weeks, 1),
+                    round(
+                        estimated_weeks, 1
+                    ),
 
-                    round(estimated_months, 1)
+                    round(
+                        estimated_months, 1
+                    )
                 ]
 
 
@@ -996,7 +1118,7 @@ if st.session_state["base_calculation"] is not None:
                 )
 
 
-                # Find newly created row
+                # Get the newly created row number
                 all_rows = worksheet.get_all_values()
 
                 row_number = len(all_rows)
@@ -1007,20 +1129,16 @@ if st.session_state["base_calculation"] is not None:
                 st.session_state["saved_row_number"] = row_number
 
 
-                st.success(
-                    "✅ Results automatically saved to Google Sheet."
-                )
-
-
             except Exception as e:
 
-                st.error(
+                # Keep error hidden from normal users
+                print(
                     f"Google Sheet saving failed: {e}"
                 )
 
 
         # =================================================
-        # UPDATE EXISTING ROW WHEN PLAN CHANGES
+        # UPDATE SAME ROW WHEN PLAN CHANGES
         # =================================================
 
         elif (
@@ -1033,38 +1151,45 @@ if st.session_state["base_calculation"] is not None:
                 worksheet = get_google_sheet()
 
                 row_number = (
-                    st.session_state["saved_row_number"]
+                    st.session_state[
+                        "saved_row_number"
+                    ]
                 )
 
 
                 worksheet.update(
 
-                    range_name=f"M{row_number}:Q{row_number}",
+                    range_name=(
+                        f"M{row_number}:Q{row_number}"
+                    ),
 
                     values=[[
                         plan,
 
-                        round(daily_target, 0),
+                        round(
+                            daily_target, 0
+                        ),
 
-                        round(estimated_days, 0),
+                        round(
+                            estimated_days, 0
+                        ),
 
-                        round(estimated_weeks, 1),
+                        round(
+                            estimated_weeks, 1
+                        ),
 
-                        round(estimated_months, 1)
+                        round(
+                            estimated_months, 1
+                        )
                     ]],
 
                     value_input_option="USER_ENTERED"
                 )
 
 
-                st.success(
-                    "✅ Google Sheet updated automatically."
-                )
-
-
             except Exception as e:
 
-                st.error(
+                print(
                     f"Google Sheet update failed: {e}"
                 )
 

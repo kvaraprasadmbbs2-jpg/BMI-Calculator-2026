@@ -4,9 +4,18 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle
+)
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import (
+    getSampleStyleSheet,
+    ParagraphStyle
+)
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.units import cm
 import io
@@ -144,10 +153,12 @@ def create_pdf(
     elements = []
 
     # -----------------------------------------------------
-    # TIME - INDIA / IST
+    # INDIA / IST DATE AND TIME
     # -----------------------------------------------------
 
-    now = datetime.now(ZoneInfo("Asia/Kolkata"))
+    now = datetime.now(
+        ZoneInfo("Asia/Kolkata")
+    )
 
     report_date = now.strftime("%d-%m-%Y")
     report_time = now.strftime("%I:%M:%S %p")
@@ -229,12 +240,16 @@ def create_pdf(
 
     if bmi < 18.5:
         bmi_category = "Underweight"
+
     elif bmi < 25:
         bmi_category = "Normal weight"
+
     elif bmi < 30:
         bmi_category = "Overweight"
+
     else:
         bmi_category = "Obesity"
+
 
     bmi_data = [
         ["BMI", f"{bmi:.1f}"],
@@ -690,25 +705,70 @@ if calculate:
         bmi_category = "Obesity"
 
 
-    # -----------------------------------------------------
-    # DISPLAY RESULTS
-    # -----------------------------------------------------
+    # =====================================================
+    # RESULTS
+    # =====================================================
 
     st.subheader("📊 Your Results")
+
+
+    # -----------------------------------------------------
+    # BMI RESULT
+    # -----------------------------------------------------
 
     st.metric(
         "BMI",
         f"{bmi:.1f}"
     )
 
+
+    # -----------------------------------------------------
+    # BMI VISUAL STATUS
+    # -----------------------------------------------------
+
+    if bmi < 18.5:
+
+        st.info(
+            "🔵 Underweight"
+        )
+
+    elif bmi < 25:
+
+        st.success(
+            "🟢 Normal weight"
+        )
+
+    elif bmi < 30:
+
+        st.warning(
+            "🟠 Overweight"
+        )
+
+    else:
+
+        st.error(
+            "🔴 Obesity"
+        )
+
+
     st.write(
         f"**BMI Category:** {bmi_category}"
     )
+
+
+    # -----------------------------------------------------
+    # BMR
+    # -----------------------------------------------------
 
     st.metric(
         "BMR",
         f"{bmr:.0f} kcal/day"
     )
+
+
+    # -----------------------------------------------------
+    # TDEE
+    # -----------------------------------------------------
 
     st.metric(
         "TDEE / Maintenance Calories",
@@ -716,11 +776,13 @@ if calculate:
     )
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # WEIGHT LOSS PLAN
-    # -----------------------------------------------------
+    # =====================================================
 
-    st.subheader("🎯 Select Your Weight Management Plan")
+    st.subheader(
+        "🎯 Select Your Weight Management Plan"
+    )
 
     plan = st.selectbox(
         "Select your plan",
@@ -749,7 +811,9 @@ if calculate:
         calorie_deficit = 0.20
 
 
-    daily_calorie_target = tdee * (1 - calorie_deficit)
+    daily_calorie_target = (
+        tdee * (1 - calorie_deficit)
+    )
 
 
     st.metric(
@@ -758,27 +822,38 @@ if calculate:
     )
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # WEIGHT LOSS CALCULATION
-    # -----------------------------------------------------
+    # =====================================================
 
     weight_to_lose = weight_kg - target_weight
 
+
     if weight_to_lose > 0:
 
-        total_calorie_deficit = weight_to_lose * 7700
+        total_calorie_deficit = (
+            weight_to_lose * 7700
+        )
 
-        daily_deficit = tdee - daily_calorie_target
+        daily_deficit = (
+            tdee - daily_calorie_target
+        )
+
 
         if daily_deficit > 0:
 
             estimated_days = (
-                total_calorie_deficit / daily_deficit
+                total_calorie_deficit
+                / daily_deficit
             )
 
-            estimated_weeks = estimated_days / 7
+            estimated_weeks = (
+                estimated_days / 7
+            )
 
-            estimated_months = estimated_days / 30.44
+            estimated_months = (
+                estimated_days / 30.44
+            )
 
         else:
 
@@ -788,7 +863,8 @@ if calculate:
 
 
         st.write(
-            f"**Weight to lose:** {weight_to_lose:.1f} kg"
+            f"**Weight to lose:** "
+            f"{weight_to_lose:.1f} kg"
         )
 
         st.write(
@@ -805,12 +881,13 @@ if calculate:
         estimated_months = 0
 
         st.info(
-            "Your target weight is not below your current weight."
+            "Your target weight is not below "
+            "your current weight."
         )
 
 
     # =====================================================
-    # SAVE DATA IN SESSION STATE
+    # SAVE CALCULATION IN SESSION STATE
     # =====================================================
 
     st.session_state["calculation"] = {
@@ -855,6 +932,7 @@ if "calculation" in st.session_state:
         save_button = st.button(
             "✅ Confirm & Save Results"
         )
+
 
         if save_button:
 
@@ -907,7 +985,7 @@ if "calculation" in st.session_state:
 
 
                 # -------------------------------------------------
-                # APPEND TO GOOGLE SHEET
+                # SAVE
                 # -------------------------------------------------
 
                 worksheet.append_row(
@@ -918,9 +996,12 @@ if "calculation" in st.session_state:
 
                 st.session_state["saved"] = True
 
+
                 st.success(
-                    "✅ Results successfully saved to Google Sheet!"
+                    "✅ Results successfully saved "
+                    "to Google Sheet!"
                 )
+
 
                 st.rerun()
 
@@ -943,7 +1024,10 @@ if "calculation" in st.session_state:
     # PDF REPORT
     # =====================================================
 
-    st.subheader("📄 Download Report")
+    st.subheader(
+        "📄 Download Report"
+    )
+
 
     pdf_file = create_pdf(
 
@@ -972,7 +1056,8 @@ if "calculation" in st.session_state:
         data=pdf_file,
 
         file_name=(
-            f"BMI_Report_{data['name'].replace(' ', '_')}.pdf"
+            f"BMI_Report_"
+            f"{data['name'].replace(' ', '_')}.pdf"
         ),
 
         mime="application/pdf"

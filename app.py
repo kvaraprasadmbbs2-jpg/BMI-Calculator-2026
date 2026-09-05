@@ -1,4 +1,7 @@
 import streamlit as st
+import gspread
+from google.oauth2.service_account import Credentials
+from datetime import datetime
 
 
 # ==========================================
@@ -14,6 +17,31 @@ st.write(
 
 
 # ==========================================
+# GOOGLE SHEET CONNECTION
+# ==========================================
+
+def get_google_sheet():
+
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=scopes
+    )
+
+    client = gspread.authorize(credentials)
+
+    spreadsheet = client.open("BMI Calculator Visitor Log")
+
+    worksheet = spreadsheet.sheet1
+
+    return worksheet
+
+
+# ==========================================
 # SESSION STATE
 # ==========================================
 
@@ -22,6 +50,9 @@ if "calculated" not in st.session_state:
 
 if "results" not in st.session_state:
     st.session_state.results = {}
+
+if "saved" not in st.session_state:
+    st.session_state.saved = False
 
 
 # ==========================================
@@ -184,31 +215,26 @@ if st.button("Calculate"):
     if not name:
 
         st.error("Please enter your name.")
-
         st.session_state.calculated = False
 
     elif age is None:
 
         st.error("Please enter your age.")
-
         st.session_state.calculated = False
 
     elif weight is None:
 
         st.error("Please enter your weight.")
-
         st.session_state.calculated = False
 
     elif height is None:
 
         st.error("Please enter your height.")
-
         st.session_state.calculated = False
 
     elif target_weight is None:
 
         st.error("Please enter your target weight.")
-
         st.session_state.calculated = False
 
     else:
@@ -218,11 +244,8 @@ if st.button("Calculate"):
         # ==================================
 
         if weight_unit == "lb":
-
             weight_kg = weight * 0.453592
-
         else:
-
             weight_kg = weight
 
 
@@ -337,6 +360,7 @@ if st.button("Calculate"):
         }
 
         st.session_state.calculated = True
+        st.session_state.saved = False
 
 
 # ==========================================
@@ -344,8 +368,6 @@ if st.button("Calculate"):
 # ==========================================
 
 if st.session_state.calculated:
-
-    # Get saved results
 
     results = st.session_state.results
 
@@ -374,7 +396,7 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # DISPLAY PERSONAL INFORMATION
+    # PERSONAL INFORMATION
     # ======================================
 
     st.success(f"Hello {name}! 👋")
@@ -409,7 +431,7 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # BMI RESULT
+    # BMI
     # ======================================
 
     st.write("## ⚖️ BMI")
@@ -420,15 +442,9 @@ if st.session_state.calculated:
     )
 
 
-    # ======================================
-    # BMI CATEGORY
-    # ======================================
-
     if bmi < 18.5:
 
-        st.warning(
-            "BMI Category: Underweight"
-        )
+        st.warning("BMI Category: Underweight")
 
         st.write(
             "Consider maintaining adequate "
@@ -437,9 +453,7 @@ if st.session_state.calculated:
 
     elif bmi < 25:
 
-        st.success(
-            "BMI Category: Normal"
-        )
+        st.success("BMI Category: Normal")
 
         st.write(
             "Your BMI is within the normal range. "
@@ -449,9 +463,7 @@ if st.session_state.calculated:
 
     elif bmi < 30:
 
-        st.warning(
-            "BMI Category: Overweight"
-        )
+        st.warning("BMI Category: Overweight")
 
         st.write(
             "Regular exercise and a balanced diet "
@@ -460,9 +472,7 @@ if st.session_state.calculated:
 
     else:
 
-        st.error(
-            "BMI Category: Obesity"
-        )
+        st.error("BMI Category: Obesity")
 
         st.write(
             "Consider discussing weight management "
@@ -471,7 +481,7 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # BMR RESULT
+    # BMR
     # ======================================
 
     st.write("## 🔥 BMR")
@@ -489,14 +499,12 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # ACTIVITY LEVEL RESULT
+    # ACTIVITY
     # ======================================
 
     st.write("## 🏃 Activity Level")
 
-    st.write(
-        f"**{activity}**"
-    )
+    st.write(f"**{activity}**")
 
     st.caption(
         activity_description[activity]
@@ -504,7 +512,7 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # TDEE RESULT
+    # TDEE
     # ======================================
 
     st.write("## 🔥 TDEE")
@@ -569,7 +577,7 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # WEIGHT LOSS / GAIN GOAL
+    # WEIGHT GOAL
     # ======================================
 
     st.write("## 🎯 Weight Goal")
@@ -578,7 +586,7 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # IF TARGET IS LOWER
+    # WEIGHT LOSS
     # ======================================
 
     if weight_difference > 0:
@@ -589,23 +597,16 @@ if st.session_state.calculated:
         )
 
 
-        # ==================================
-        # WEIGHT LOSS PLAN
-        # ==================================
-
         weight_loss_plan = st.selectbox(
             "Select your weight-loss plan",
             [
                 "Mild (10% calorie deficit)",
                 "Moderate (15% calorie deficit)",
                 "More aggressive (20% calorie deficit)"
-            ]
+            ],
+            key="weight_loss_plan"
         )
 
-
-        # ==================================
-        # DEFICIT FACTORS
-        # ==================================
 
         deficit_factors = {
 
@@ -617,23 +618,15 @@ if st.session_state.calculated:
         }
 
 
-        deficit_percentage = (
-            deficit_factors[weight_loss_plan]
-        )
+        deficit_percentage = deficit_factors[
+            weight_loss_plan
+        ]
 
-
-        # ==================================
-        # DAILY CALORIE DEFICIT
-        # ==================================
 
         daily_deficit = (
             tdee * deficit_percentage
         )
 
-
-        # ==================================
-        # DAILY CALORIE TARGET
-        # ==================================
 
         weight_loss_calories = (
             tdee - daily_deficit
@@ -652,75 +645,76 @@ if st.session_state.calculated:
 
 
         # ==================================
-        # ESTIMATED WEIGHT LOSS TIME
+        # ESTIMATED TIME
         # ==================================
-
-        # Approximation:
-        # 7,700 kcal ≈ 1 kg body fat
 
         calories_to_lose = (
             weight_difference * 7700
         )
 
 
-        if daily_deficit > 0:
+        days_required = (
+            calories_to_lose / daily_deficit
+        )
 
-            days_required = (
-                calories_to_lose / daily_deficit
+        weeks_required = (
+            days_required / 7
+        )
+
+        months_required = (
+            weeks_required / 4.345
+        )
+
+
+        st.write("### ⏳ Estimated Time")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+
+            st.metric(
+                "Days",
+                f"{days_required:.0f}"
             )
 
-            weeks_required = (
-                days_required / 7
+        with col2:
+
+            st.metric(
+                "Weeks",
+                f"{weeks_required:.1f}"
             )
 
-            months_required = (
-                weeks_required / 4.345
+        with col3:
+
+            st.metric(
+                "Months",
+                f"{months_required:.1f}"
             )
 
 
-            # ==================================
-            # ESTIMATED TIME
-            # ==================================
-
-            st.write("### ⏳ Estimated Time")
-
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-
-                st.metric(
-                    "Days",
-                    f"{days_required:.0f}"
-                )
-
-            with col2:
-
-                st.metric(
-                    "Weeks",
-                    f"{weeks_required:.1f}"
-                )
-
-            with col3:
-
-                st.metric(
-                    "Months",
-                    f"{months_required:.1f}"
-                )
-
-
-            st.info(
-                "This is an approximate mathematical estimate. "
-                "Actual weight loss may differ because of changes "
-                "in water, glycogen, muscle mass, appetite and "
-                "energy expenditure."
-            )
+        st.info(
+            "This is an approximate mathematical estimate. "
+            "Actual weight loss may differ because of changes "
+            "in water, glycogen, muscle mass, appetite and "
+            "energy expenditure."
+        )
 
 
     # ======================================
-    # IF TARGET IS SAME
+    # SAME WEIGHT
     # ======================================
 
     elif weight_difference == 0:
+
+        weight_loss_plan = "No weight loss required"
+
+        weight_loss_calories = maintenance
+
+        days_required = 0
+
+        weeks_required = 0
+
+        months_required = 0
 
         st.success(
             "🎯 Your target weight is the same "
@@ -729,12 +723,22 @@ if st.session_state.calculated:
 
 
     # ======================================
-    # IF TARGET IS HIGHER
+    # WEIGHT GAIN
     # ======================================
 
     else:
 
         weight_to_gain = abs(weight_difference)
+
+        weight_loss_plan = "Weight gain"
+
+        weight_loss_calories = weight_gain
+
+        days_required = 0
+
+        weeks_required = 0
+
+        months_required = 0
 
         st.write(
             f"**Weight to gain: "
@@ -746,6 +750,102 @@ if st.session_state.calculated:
             "weight. A dedicated weight-gain calorie plan "
             "can be added separately."
         )
+
+
+    # ==========================================
+    # SAVE TO GOOGLE SHEET
+    # ==========================================
+
+    st.divider()
+
+    st.write("## 💾 Save Results")
+
+    st.write(
+        "Click the button below to save this calculation "
+        "to the BMI Calculator Google Sheet."
+    )
+
+
+    if st.button(
+        "💾 Save Results to Google Sheet",
+        key="save_to_google_sheet"
+    ):
+
+        if st.session_state.saved:
+
+            st.info(
+                "These results have already been saved."
+            )
+
+        else:
+
+            try:
+
+                worksheet = get_google_sheet()
+
+                now = datetime.now()
+
+                date = now.strftime("%Y-%m-%d")
+
+                time = now.strftime("%H:%M:%S")
+
+
+                row = [
+
+                    name,
+                    date,
+                    time,
+
+                    age,
+                    sex,
+
+                    round(weight_kg, 2),
+
+                    round(height_cm, 2),
+
+                    round(target_weight, 2),
+
+                    activity,
+
+                    round(bmi, 2),
+
+                    round(bmr, 0),
+
+                    round(tdee, 0),
+
+                    weight_loss_plan,
+
+                    round(weight_loss_calories, 0),
+
+                    round(days_required, 0),
+
+                    round(weeks_required, 1),
+
+                    round(months_required, 1)
+                ]
+
+
+                worksheet.append_row(
+                    row,
+                    value_input_option="USER_ENTERED"
+                )
+
+
+                st.session_state.saved = True
+
+                st.success(
+                    "✅ Results successfully saved "
+                    "to Google Sheet!"
+                )
+
+
+            except Exception as e:
+
+                st.error(
+                    "❌ Unable to save results to Google Sheet."
+                )
+
+                st.exception(e)
 
 
 # ==========================================

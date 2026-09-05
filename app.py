@@ -152,9 +152,9 @@ def create_pdf(
 
     elements = []
 
-    # -----------------------------------------------------
+    # =====================================================
     # INDIA / IST DATE AND TIME
-    # -----------------------------------------------------
+    # =====================================================
 
     now = datetime.now(
         ZoneInfo("Asia/Kolkata")
@@ -164,9 +164,9 @@ def create_pdf(
     report_time = now.strftime("%I:%M:%S %p")
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # TITLE
-    # -----------------------------------------------------
+    # =====================================================
 
     elements.append(
         Paragraph(
@@ -185,9 +185,9 @@ def create_pdf(
     elements.append(Spacer(1, 12))
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # PERSONAL INFORMATION
-    # -----------------------------------------------------
+    # =====================================================
 
     elements.append(
         Paragraph(
@@ -227,9 +227,9 @@ def create_pdf(
     elements.append(personal_table)
 
 
-    # -----------------------------------------------------
-    # BMI
-    # -----------------------------------------------------
+    # =====================================================
+    # BMI ASSESSMENT
+    # =====================================================
 
     elements.append(
         Paragraph(
@@ -277,9 +277,9 @@ def create_pdf(
     elements.append(bmi_table)
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # ENERGY REQUIREMENTS
-    # -----------------------------------------------------
+    # =====================================================
 
     elements.append(
         Paragraph(
@@ -315,9 +315,9 @@ def create_pdf(
     elements.append(energy_table)
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # WEIGHT LOSS ESTIMATE
-    # -----------------------------------------------------
+    # =====================================================
 
     elements.append(
         Paragraph(
@@ -367,9 +367,9 @@ def create_pdf(
     elements.append(timeline_table)
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # EXPLANATION
-    # -----------------------------------------------------
+    # =====================================================
 
     elements.append(
         Paragraph(
@@ -396,9 +396,9 @@ def create_pdf(
     elements.append(Spacer(1, 10))
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # DISCLAIMER
-    # -----------------------------------------------------
+    # =====================================================
 
     elements.append(
         Paragraph(
@@ -422,9 +422,9 @@ def create_pdf(
     )
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # BUILD PDF
-    # -----------------------------------------------------
+    # =====================================================
 
     document.build(elements)
 
@@ -437,11 +437,13 @@ def create_pdf(
 # TITLE
 # =========================================================
 
-st.title("🩺 BMI & Weight Management Calculator")
+st.title(
+    "🩺 BMI & Weight Management Calculator"
+)
 
 st.write(
-    "Enter your details below to calculate BMI, BMR, TDEE and "
-    "a personalized calorie target."
+    "Enter your details below to calculate BMI, BMR, TDEE "
+    "and a personalized calorie target."
 )
 
 
@@ -573,7 +575,7 @@ calculate = st.button(
 
 
 # =========================================================
-# CALCULATIONS
+# CALCULATION
 # =========================================================
 
 if calculate:
@@ -585,31 +587,26 @@ if calculate:
     if not name.strip():
 
         st.error("Please enter your name.")
-
         st.stop()
 
     if age is None:
 
         st.error("Please enter your age.")
-
         st.stop()
 
     if weight is None:
 
         st.error("Please enter your weight.")
-
         st.stop()
 
     if height is None:
 
         st.error("Please enter your height.")
-
         st.stop()
 
     if target_weight is None:
 
         st.error("Please enter your target weight.")
-
         st.stop()
 
 
@@ -713,7 +710,7 @@ if calculate:
 
 
     # -----------------------------------------------------
-    # BMI RESULT
+    # BMI
     # -----------------------------------------------------
 
     st.metric(
@@ -728,27 +725,19 @@ if calculate:
 
     if bmi < 18.5:
 
-        st.info(
-            "🔵 Underweight"
-        )
+        st.info("🔵 Underweight")
 
     elif bmi < 25:
 
-        st.success(
-            "🟢 Normal weight"
-        )
+        st.success("🟢 Normal weight")
 
     elif bmi < 30:
 
-        st.warning(
-            "🟠 Overweight"
-        )
+        st.warning("🟠 Overweight")
 
     else:
 
-        st.error(
-            "🔴 Obesity"
-        )
+        st.error("🔴 Obesity")
 
 
     st.write(
@@ -777,7 +766,7 @@ if calculate:
 
 
     # =====================================================
-    # WEIGHT LOSS PLAN
+    # WEIGHT MANAGEMENT PLAN
     # =====================================================
 
     st.subheader(
@@ -790,12 +779,13 @@ if calculate:
             "Mild",
             "Moderate",
             "More aggressive"
-        ]
+        ],
+        key="plan_selection"
     )
 
 
     # -----------------------------------------------------
-    # CALORIE TARGET
+    # CALORIE DEFICIT
     # -----------------------------------------------------
 
     if plan == "Mild":
@@ -881,16 +871,15 @@ if calculate:
         estimated_months = 0
 
         st.info(
-            "Your target weight is not below "
-            "your current weight."
+            "Your target weight is not below your current weight."
         )
 
 
     # =====================================================
-    # SAVE CALCULATION IN SESSION STATE
+    # CREATE CALCULATION DATA
     # =====================================================
 
-    st.session_state["calculation"] = {
+    calculation = {
 
         "name": name,
         "age": age,
@@ -909,11 +898,151 @@ if calculate:
         "estimated_months": estimated_months
     }
 
-    st.session_state["saved"] = False
+
+    # =====================================================
+    # AUTOMATIC GOOGLE SHEET SAVE
+    # =====================================================
+
+    # Create a unique ID for this calculation.
+    # This prevents the same calculation from being
+    # automatically saved multiple times during reruns.
+
+    calculation_id = (
+        f"{name.strip().lower()}|"
+        f"{age}|"
+        f"{sex}|"
+        f"{weight_kg:.4f}|"
+        f"{height_cm:.4f}|"
+        f"{target_weight:.4f}|"
+        f"{activity}|"
+        f"{plan}"
+    )
+
+
+    if st.session_state.get(
+        "last_saved_calculation_id"
+    ) != calculation_id:
+
+        try:
+
+            worksheet = get_google_sheet()
+
+
+            # -------------------------------------------------
+            # INDIA / IST DATE AND TIME
+            # -------------------------------------------------
+
+            now = datetime.now(
+                ZoneInfo("Asia/Kolkata")
+            )
+
+            date = now.strftime(
+                "%Y-%m-%d"
+            )
+
+            time = now.strftime(
+                "%I:%M:%S %p"
+            )
+
+
+            # -------------------------------------------------
+            # GOOGLE SHEET ROW
+            # -------------------------------------------------
+
+            row = [
+
+                calculation["name"],
+                date,
+                time,
+                calculation["age"],
+                calculation["sex"],
+                round(
+                    calculation["weight_kg"],
+                    2
+                ),
+                round(
+                    calculation["height_cm"],
+                    2
+                ),
+                round(
+                    calculation["target_weight"],
+                    2
+                ),
+                calculation["activity"],
+                round(
+                    calculation["bmi"],
+                    2
+                ),
+                round(
+                    calculation["bmr"],
+                    0
+                ),
+                round(
+                    calculation["tdee"],
+                    0
+                ),
+                calculation["plan"],
+                round(
+                    calculation["daily_calorie_target"],
+                    0
+                ),
+                round(
+                    calculation["estimated_days"],
+                    0
+                ),
+                round(
+                    calculation["estimated_weeks"],
+                    1
+                ),
+                round(
+                    calculation["estimated_months"],
+                    1
+                )
+            ]
+
+
+            # -------------------------------------------------
+            # AUTOMATICALLY APPEND ROW
+            # -------------------------------------------------
+
+            worksheet.append_row(
+                row,
+                value_input_option="USER_ENTERED"
+            )
+
+
+            # Remember that this calculation has been saved.
+
+            st.session_state[
+                "last_saved_calculation_id"
+            ] = calculation_id
+
+
+            st.success(
+                "✅ Results automatically saved "
+                "to Google Sheet."
+            )
+
+
+        except Exception as e:
+
+            st.error(
+                f"❌ Could not save results to "
+                f"Google Sheet: {e}"
+            )
+
+
+    # =====================================================
+    # STORE CALCULATION FOR PDF
+    # =====================================================
+
+    st.session_state[
+        "calculation"
+    ] = calculation
 
 
 # =========================================================
-# SAVE + PDF SECTION
+# PDF SECTION
 # =========================================================
 
 if "calculation" in st.session_state:
@@ -921,113 +1050,14 @@ if "calculation" in st.session_state:
     data = st.session_state["calculation"]
 
 
-    # =====================================================
-    # SAVE TO GOOGLE SHEET
-    # =====================================================
-
-    if not st.session_state.get("saved", False):
-
-        st.subheader("💾 Save Results")
-
-        save_button = st.button(
-            "✅ Confirm & Save Results"
-        )
-
-
-        if save_button:
-
-            try:
-
-                worksheet = get_google_sheet()
-
-
-                # -------------------------------------------------
-                # INDIA / IST DATE AND TIME
-                # -------------------------------------------------
-
-                now = datetime.now(
-                    ZoneInfo("Asia/Kolkata")
-                )
-
-                date = now.strftime(
-                    "%Y-%m-%d"
-                )
-
-                time = now.strftime(
-                    "%I:%M:%S %p"
-                )
-
-
-                # -------------------------------------------------
-                # DATA ROW
-                # -------------------------------------------------
-
-                row = [
-
-                    data["name"],
-                    date,
-                    time,
-                    data["age"],
-                    data["sex"],
-                    round(data["weight_kg"], 2),
-                    round(data["height_cm"], 2),
-                    round(data["target_weight"], 2),
-                    data["activity"],
-                    round(data["bmi"], 2),
-                    round(data["bmr"], 0),
-                    round(data["tdee"], 0),
-                    data["plan"],
-                    round(data["daily_calorie_target"], 0),
-                    round(data["estimated_days"], 0),
-                    round(data["estimated_weeks"], 1),
-                    round(data["estimated_months"], 1)
-                ]
-
-
-                # -------------------------------------------------
-                # SAVE
-                # -------------------------------------------------
-
-                worksheet.append_row(
-                    row,
-                    value_input_option="USER_ENTERED"
-                )
-
-
-                st.session_state["saved"] = True
-
-
-                st.success(
-                    "✅ Results successfully saved "
-                    "to Google Sheet!"
-                )
-
-
-                st.rerun()
-
-
-            except Exception as e:
-
-                st.error(
-                    f"❌ Error saving to Google Sheet: {e}"
-                )
-
-
-    else:
-
-        st.success(
-            "✅ Results already saved to Google Sheet."
-        )
-
-
-    # =====================================================
-    # PDF REPORT
-    # =====================================================
-
     st.subheader(
         "📄 Download Report"
     )
 
+
+    # -----------------------------------------------------
+    # CREATE PDF
+    # -----------------------------------------------------
 
     pdf_file = create_pdf(
 
@@ -1048,6 +1078,10 @@ if "calculation" in st.session_state:
         data["estimated_months"]
     )
 
+
+    # -----------------------------------------------------
+    # DOWNLOAD BUTTON
+    # -----------------------------------------------------
 
     st.download_button(
 

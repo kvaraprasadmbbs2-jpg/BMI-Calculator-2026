@@ -191,14 +191,9 @@ def create_pdf(data):
 
     story.append(
         Paragraph(
-            f"<b>Activity Level:</b> {data['activity']}",
-            styles["Normal"]
-        )
-    )
-
-    story.append(
-        Paragraph(
-            f"<b>Activity Description:</b> {data['activity_description']}",
+            f"<b>Activity Level:</b> "
+            f"{data['activity']} "
+            f"({data['activity_description']})",
             styles["Normal"]
         )
     )
@@ -230,21 +225,24 @@ def create_pdf(data):
 
     story.append(
         Paragraph(
-            f"<b>Estimated Days:</b> {data['estimated_days']}",
+            f"<b>Estimated Days:</b> "
+            f"{data['estimated_days']}",
             styles["Normal"]
         )
     )
 
     story.append(
         Paragraph(
-            f"<b>Estimated Weeks:</b> {data['estimated_weeks']}",
+            f"<b>Estimated Weeks:</b> "
+            f"{data['estimated_weeks']}",
             styles["Normal"]
         )
     )
 
     story.append(
         Paragraph(
-            f"<b>Estimated Months:</b> {data['estimated_months']}",
+            f"<b>Estimated Months:</b> "
+            f"{data['estimated_months']}",
             styles["Normal"]
         )
     )
@@ -431,27 +429,18 @@ activity = st.selectbox(
 # =========================================================
 
 if "base_calculation" not in st.session_state:
-
     st.session_state["base_calculation"] = None
 
-
 if "plan_selection" not in st.session_state:
-
     st.session_state["plan_selection"] = "Select a plan"
 
-
 if "saved_base_id" not in st.session_state:
-
     st.session_state["saved_base_id"] = None
 
-
 if "saved_row_number" not in st.session_state:
-
     st.session_state["saved_row_number"] = None
 
-
 if "calculation" not in st.session_state:
-
     st.session_state["calculation"] = None
 
 
@@ -480,18 +469,15 @@ if calculate:
         st.error("Please enter your name.")
         st.stop()
 
-
     if age is None:
 
         st.error("Please enter your age.")
         st.stop()
 
-
     if weight is None:
 
         st.error("Please enter your weight.")
         st.stop()
-
 
     if height_unit == "cm":
 
@@ -513,7 +499,6 @@ if calculate:
             float(feet) * 30.48
             + float(inches) * 2.54
         )
-
 
     if target_weight is None:
 
@@ -657,10 +642,14 @@ if calculate:
 
 
     # Reset plan
+
     st.session_state["plan_selection"] = "Select a plan"
 
+
     # Reset Google Sheet tracking
+
     st.session_state["saved_base_id"] = None
+
     st.session_state["saved_row_number"] = None
 
     st.session_state["calculation"] = None
@@ -719,20 +708,15 @@ if st.session_state["base_calculation"] is not None:
 
 
     # =====================================================
-    # ACTIVITY LEVEL
+    # ACTIVITY LEVEL + DESCRIPTION
     # =====================================================
 
     st.markdown("---")
 
-    st.subheader("🏃 Activity Level")
-
     st.write(
-        f"**Activity Level:** {data['activity']}"
-    )
-
-    st.info(
-        f"**Description:** "
-        f"{data['activity_description']}"
+        f"**Activity Level:** "
+        f"{data['activity']} "
+        f"({data['activity_description']})"
     )
 
 
@@ -838,7 +822,9 @@ if st.session_state["base_calculation"] is not None:
         else:
 
             estimated_days = 0
+
             estimated_weeks = 0
+
             estimated_months = 0
 
 
@@ -995,7 +981,8 @@ if st.session_state["base_calculation"] is not None:
 
             "plan": plan,
 
-            "daily_target": daily_target,
+            "daily_target":
+                daily_target,
 
             "weight_to_lose":
                 weight_to_lose,
@@ -1012,9 +999,11 @@ if st.session_state["base_calculation"] is not None:
                 round(estimated_months, 1)
                 if weight_to_lose > 0 else 0,
 
-            "date": report_date,
+            "date":
+                report_date,
 
-            "time": report_time
+            "time":
+                report_time
         }
 
 
@@ -1118,7 +1107,6 @@ if st.session_state["base_calculation"] is not None:
                 )
 
 
-                # Get the newly created row number
                 all_rows = worksheet.get_all_values()
 
                 row_number = len(all_rows)
@@ -1131,7 +1119,6 @@ if st.session_state["base_calculation"] is not None:
 
             except Exception as e:
 
-                # Keep error hidden from normal users
                 print(
                     f"Google Sheet saving failed: {e}"
                 )

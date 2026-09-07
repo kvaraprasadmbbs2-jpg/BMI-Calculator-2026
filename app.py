@@ -343,6 +343,38 @@ def create_pdf(data):
         f"{data['healthy_max']:.1f} kg"
     )
 
+    y -= 12 * mm
+
+    # -----------------------------------------------------
+    # PROTEIN
+    # -----------------------------------------------------
+
+    pdf.setFont(
+        "Helvetica-Bold",
+        13
+    )
+
+    pdf.drawString(
+        20 * mm,
+        y,
+        "Protein Recommendation"
+    )
+
+    y -= 9 * mm
+
+    pdf.setFont(
+        "Helvetica",
+        11
+    )
+
+    pdf.drawString(
+        20 * mm,
+        y,
+        f"Estimated protein: "
+        f"{data['protein_min']:.0f} - "
+        f"{data['protein_max']:.0f} g/day"
+    )
+
     y -= 18 * mm
 
     # -----------------------------------------------------
@@ -357,13 +389,13 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        "This calculator provides an estimate for educational purposes."
+        "This calculator provides estimates for educational purposes."
     )
 
     pdf.drawString(
         20 * mm,
         y - 5 * mm,
-        "Individual calorie and weight-management needs may vary."
+        "Individual calorie, protein and weight-management needs may vary."
     )
 
     pdf.save()
@@ -570,7 +602,7 @@ activity = st.selectbox(
 )
 
 
-# Dynamic single-line activity description
+# Dynamic activity description
 
 st.markdown(
     f"**Select activity level:** {activity} "
@@ -892,7 +924,7 @@ if calculate:
     }
 
 
-    # Reset Google Sheet row for new calculation
+    # New calculation = new Sheet row
 
     st.session_state.last_plan = None
 
@@ -915,8 +947,40 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # DASHBOARD
-    # Native Streamlit components
+    # BMI STATUS
+    # =====================================================
+
+    if data["bmi_category"] == "Normal weight":
+
+        st.success(
+            f"🟢 BMI {data['bmi']:.1f} — "
+            f"{data['bmi_category']}"
+        )
+
+    elif data["bmi_category"] == "Underweight":
+
+        st.warning(
+            f"🟡 BMI {data['bmi']:.1f} — "
+            f"{data['bmi_category']}"
+        )
+
+    elif data["bmi_category"] == "Overweight":
+
+        st.warning(
+            f"🟠 BMI {data['bmi']:.1f} — "
+            f"{data['bmi_category']}"
+        )
+
+    else:
+
+        st.error(
+            f"🔴 BMI {data['bmi']:.1f} — "
+            f"{data['bmi_category']}"
+        )
+
+
+    # =====================================================
+    # MAIN DASHBOARD
     # =====================================================
 
     col1, col2 = st.columns(2)
@@ -926,9 +990,7 @@ if st.session_state.calculation is not None:
 
         st.metric(
             label="BMI",
-            value=f"{data['bmi']:.1f}",
-            delta=data["bmi_category"],
-            delta_color="off"
+            value=f"{data['bmi']:.1f}"
         )
 
 
@@ -963,13 +1025,14 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # HEALTHY WEIGHT
+    # HEALTHY WEIGHT RANGE
     # =====================================================
 
     st.info(
-        f"🎯 **Healthy weight range:** "
-        f"{data['healthy_min']:.1f} – "
-        f"{data['healthy_max']:.1f} kg"
+        f"⚖️ **Healthy BMI range: 18.5–24.9**\n\n"
+        f"Estimated healthy weight: "
+        f"**{data['healthy_min']:.1f} – "
+        f"{data['healthy_max']:.1f} kg**"
     )
 
 
@@ -1025,6 +1088,40 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
+    # CALORIE EXPLANATION
+    # =====================================================
+
+    st.subheader(
+        "🔥 Calorie calculation"
+    )
+
+
+    st.write(
+        f"**TDEE:** {data['tdee']:.0f} kcal/day"
+    )
+
+    st.write(
+        f"**Selected plan:** {weight_loss_plan}"
+    )
+
+    st.write(
+        f"**Calorie deficit:** −{deficit} kcal/day"
+    )
+
+    st.metric(
+        label="Target daily intake",
+        value=f"{daily_calorie_target:.0f} kcal/day"
+    )
+
+
+    st.caption(
+        "The estimated target is calculated by subtracting "
+        "the selected calorie deficit from TDEE. Actual energy "
+        "needs and weight change can vary between individuals."
+    )
+
+
+    # =====================================================
     # WEIGHT DIFFERENCE
     # =====================================================
 
@@ -1075,7 +1172,7 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # WEIGHT GOAL
+    # WEIGHT LOSS GOAL
     # =====================================================
 
     if weight_to_lose > 0:
@@ -1084,31 +1181,32 @@ if st.session_state.calculation is not None:
             "📉 Weight-loss goal"
         )
 
-        st.write(
-            f"**Current weight:** "
-            f"{data['weight_kg']:.1f} kg"
-        )
-
-        st.write(
-            f"**Target weight:** "
-            f"{data['target_weight_kg']:.1f} kg"
-        )
-
-        st.write(
-            f"**Weight to lose:** "
-            f"{weight_to_lose:.1f} kg"
-        )
+        col5, col6, col7 = st.columns(3)
 
 
-        # -------------------------------------------------
-        # GOAL BAR
-        # -------------------------------------------------
-        #
-        # At the initial calculation, progress is 0%.
-        # The bar represents actual progress only when
-        # a future weight-tracking feature is added.
-        #
-        # For now, show the size of the goal separately.
+        with col5:
+
+            st.metric(
+                "Current",
+                f"{data['weight_kg']:.1f} kg"
+            )
+
+
+        with col6:
+
+            st.metric(
+                "Target",
+                f"{data['target_weight_kg']:.1f} kg"
+            )
+
+
+        with col7:
+
+            st.metric(
+                "To lose",
+                f"{weight_to_lose:.1f} kg"
+            )
+
 
         goal_size_percent = (
             weight_to_lose
@@ -1157,20 +1255,6 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # DAILY CALORIE TARGET
-    # =====================================================
-
-    st.subheader(
-        "🔥 Daily calorie target"
-    )
-
-    st.metric(
-        label="Recommended daily calorie target",
-        value=f"{daily_calorie_target:.0f} kcal/day"
-    )
-
-
-    # =====================================================
     # ESTIMATED WEIGHT LOSS
     # =====================================================
 
@@ -1180,10 +1264,10 @@ if st.session_state.calculation is not None:
             "⏱️ Estimated weight-loss time"
         )
 
-        col5, col6, col7 = st.columns(3)
+        col8, col9, col10 = st.columns(3)
 
 
-        with col5:
+        with col8:
 
             st.metric(
                 "Days",
@@ -1191,7 +1275,7 @@ if st.session_state.calculation is not None:
             )
 
 
-        with col6:
+        with col9:
 
             st.metric(
                 "Weeks",
@@ -1199,7 +1283,7 @@ if st.session_state.calculation is not None:
             )
 
 
-        with col7:
+        with col10:
 
             st.metric(
                 "Months",
@@ -1207,9 +1291,25 @@ if st.session_state.calculation is not None:
             )
 
 
+        weekly_loss = (
+            deficit
+            *
+            7
+            /
+            7700
+        )
+
+
+        st.write(
+            f"📉 Estimated average loss: "
+            f"**{weekly_loss:.2f} kg/week**"
+        )
+
+
         st.caption(
-            "This is an estimate based on an assumed "
-            "7,700 kcal energy deficit per kg of weight loss."
+            "This projection assumes a constant calorie deficit "
+            "and uses approximately 7,700 kcal per kg of weight loss. "
+            "Real-world weight change is not perfectly linear."
         )
 
 
@@ -1218,6 +1318,142 @@ if st.session_state.calculation is not None:
         st.success(
             "Target weight already reached."
         )
+
+
+    # =====================================================
+    # WEIGHT-LOSS PROJECTION
+    # =====================================================
+
+    if weight_to_lose > 0:
+
+        st.subheader(
+            "📈 Weight-loss projection"
+        )
+
+        st.caption(
+            "A mathematical projection based on the selected "
+            "daily calorie deficit. Actual weight change may differ."
+        )
+
+
+        projection_months = int(
+            min(
+                max(
+                    round(estimated_months),
+                    1
+                ),
+                12
+            )
+        )
+
+
+        projection_rows = []
+
+        for month in range(
+            projection_months + 1
+        ):
+
+            projected_loss = (
+                deficit
+                *
+                (month * 30.44)
+                /
+                7700
+            )
+
+            projected_weight = max(
+                data["target_weight_kg"],
+                data["weight_kg"] - projected_loss
+            )
+
+
+            projection_rows.append({
+
+                "Time":
+                    "Starting"
+                    if month == 0
+                    else f"{month} month"
+                    if month == 1
+                    else f"{month} months",
+
+                "Expected weight":
+                    round(
+                        projected_weight,
+                        1
+                    )
+            })
+
+
+        # -------------------------------------------------
+        # TABLE
+        # -------------------------------------------------
+
+        st.table(
+            projection_rows
+        )
+
+
+        # -------------------------------------------------
+        # GRAPH
+        # -------------------------------------------------
+
+        chart_data = {
+
+            "Expected weight (kg)": [
+
+                row["Expected weight"]
+
+                for row in projection_rows
+            ]
+        }
+
+
+        st.line_chart(
+            chart_data,
+            height=300
+        )
+
+
+    # =====================================================
+    # PROTEIN RECOMMENDATION
+    # =====================================================
+
+    st.subheader(
+        "🥗 Daily protein recommendation"
+    )
+
+
+    # A practical weight-loss range intended to help
+    # preserve lean mass, especially when exercising.
+
+    protein_min = (
+        data["weight_kg"]
+        *
+        1.6
+    )
+
+    protein_max = (
+        data["weight_kg"]
+        *
+        2.0
+    )
+
+
+    st.metric(
+        label="Estimated protein target",
+        value=(
+            f"{protein_min:.0f}–"
+            f"{protein_max:.0f} g/day"
+        )
+    )
+
+
+    st.caption(
+        "For people actively trying to lose weight while "
+        "maintaining muscle, approximately 1.6–2.0 g protein/kg "
+        "body weight/day is used here as a practical estimate. "
+        "Individual requirements can vary."
+    )
 
 
     # =====================================================
@@ -1244,6 +1480,14 @@ if st.session_state.calculation is not None:
     data["estimated_months"] = round(
         estimated_months,
         1
+    )
+
+    data["protein_min"] = (
+        protein_min
+    )
+
+    data["protein_max"] = (
+        protein_max
     )
 
 
@@ -1423,9 +1667,6 @@ if st.session_state.calculation is not None:
 
 
     except Exception as e:
-
-        # Keep technical Google Sheet errors
-        # hidden from the visitor.
 
         print(
             "Google Sheet error:",

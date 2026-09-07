@@ -20,113 +20,6 @@ st.set_page_config(
 
 
 # =========================================================
-# CUSTOM CSS
-# =========================================================
-
-st.markdown(
-    """
-    <style>
-
-    .main {
-        padding-top: 1rem;
-    }
-
-    .result-card {
-        padding: 18px;
-        border-radius: 14px;
-        border: 1px solid rgba(128, 128, 128, 0.25);
-        text-align: center;
-        margin-bottom: 12px;
-        min-height: 120px;
-    }
-
-    .result-value {
-        font-size: 28px;
-        font-weight: 700;
-        margin-top: 5px;
-    }
-
-    .result-label {
-        font-size: 14px;
-        opacity: 0.75;
-    }
-
-    .result-sub {
-        font-size: 13px;
-        margin-top: 5px;
-        opacity: 0.8;
-    }
-
-    .info-card {
-        padding: 18px;
-        border-radius: 14px;
-        border: 1px solid rgba(128, 128, 128, 0.25);
-        margin-top: 12px;
-        margin-bottom: 12px;
-    }
-
-    .goal-card {
-        padding: 20px;
-        border-radius: 14px;
-        border: 1px solid rgba(128, 128, 128, 0.25);
-        margin-top: 15px;
-        margin-bottom: 15px;
-    }
-
-    .goal-title {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
-
-    .goal-subtitle {
-        font-size: 14px;
-        opacity: 0.75;
-        margin-bottom: 12px;
-    }
-
-    .weight-bar-background {
-        width: 100%;
-        height: 22px;
-        border-radius: 12px;
-        background: rgba(128, 128, 128, 0.18);
-        overflow: hidden;
-        margin-top: 12px;
-        margin-bottom: 10px;
-    }
-
-    .weight-bar-fill {
-        height: 100%;
-        border-radius: 12px;
-        background: linear-gradient(
-            90deg,
-            #4CAF50,
-            #8BC34A
-        );
-    }
-
-    .weight-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13px;
-        opacity: 0.8;
-    }
-
-    .plan-card {
-        padding: 18px;
-        border-radius: 14px;
-        border: 1px solid rgba(128, 128, 128, 0.25);
-        margin-top: 10px;
-        margin-bottom: 12px;
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# =========================================================
 # GOOGLE SHEET CONNECTION
 # =========================================================
 
@@ -145,7 +38,9 @@ def get_google_sheet():
 
     client = gspread.authorize(credentials)
 
-    spreadsheet = client.open("BMI Calculator Visitor Log")
+    spreadsheet = client.open(
+        "BMI Calculator Visitor Log"
+    )
 
     worksheet = spreadsheet.sheet1
 
@@ -368,7 +263,8 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Target Weight: {data['target_weight_kg']:.1f} kg"
+        f"Target Weight: "
+        f"{data['target_weight_kg']:.1f} kg"
     )
 
     y -= 7 * mm
@@ -376,7 +272,8 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Weight Loss Plan: {data['weight_loss_plan']}"
+        f"Weight Loss Plan: "
+        f"{data['weight_loss_plan']}"
     )
 
     y -= 7 * mm
@@ -393,7 +290,8 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Estimated Days: {data['estimated_days']}"
+        f"Estimated Days: "
+        f"{data['estimated_days']}"
     )
 
     y -= 7 * mm
@@ -401,7 +299,8 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Estimated Weeks: {data['estimated_weeks']:.1f}"
+        f"Estimated Weeks: "
+        f"{data['estimated_weeks']:.1f}"
     )
 
     y -= 7 * mm
@@ -409,7 +308,8 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Estimated Months: {data['estimated_months']:.1f}"
+        f"Estimated Months: "
+        f"{data['estimated_months']:.1f}"
     )
 
     y -= 12 * mm
@@ -555,7 +455,10 @@ age = st.number_input(
 
 sex = st.selectbox(
     "Select sex",
-    ["Male", "Female"]
+    [
+        "Male",
+        "Female"
+    ]
 )
 
 
@@ -565,7 +468,10 @@ sex = st.selectbox(
 
 weight_unit = st.selectbox(
     "Select weight unit",
-    ["kg", "lb"]
+    [
+        "kg",
+        "lb"
+    ]
 )
 
 
@@ -584,7 +490,10 @@ weight = st.number_input(
 
 height_unit = st.selectbox(
     "Select height unit",
-    ["cm", "ft/in"]
+    [
+        "cm",
+        "ft/in"
+    ]
 )
 
 
@@ -628,7 +537,10 @@ else:
 
 target_weight_unit = st.selectbox(
     "Select target weight unit",
-    ["kg", "lb"]
+    [
+        "kg",
+        "lb"
+    ]
 )
 
 
@@ -658,7 +570,7 @@ activity = st.selectbox(
 )
 
 
-# Single-line activity description
+# Dynamic single-line activity description
 
 st.markdown(
     f"**Select activity level:** {activity} "
@@ -742,7 +654,7 @@ if calculate:
 
 
     # -----------------------------------------------------
-    # WEIGHT → KG
+    # CONVERT WEIGHT TO KG
     # -----------------------------------------------------
 
     if weight_unit == "kg":
@@ -751,11 +663,15 @@ if calculate:
 
     else:
 
-        weight_kg = float(weight) * 0.45359237
+        weight_kg = (
+            float(weight)
+            *
+            0.45359237
+        )
 
 
     # -----------------------------------------------------
-    # HEIGHT → CM
+    # CONVERT HEIGHT TO CM
     # -----------------------------------------------------
 
     if height_unit == "cm":
@@ -768,11 +684,17 @@ if calculate:
 
             st.stop()
 
-        height_cm = float(height_cm_input)
+        height_cm = float(
+            height_cm_input
+        )
 
     else:
 
-        if height_ft is None or height_in is None:
+        if (
+            height_ft is None
+            or
+            height_in is None
+        ):
 
             st.error(
                 "Please enter both feet and inches."
@@ -788,18 +710,21 @@ if calculate:
 
 
     # -----------------------------------------------------
-    # TARGET WEIGHT → KG
+    # CONVERT TARGET WEIGHT TO KG
     # -----------------------------------------------------
 
     if target_weight_unit == "kg":
 
-        target_weight_kg = float(target_weight)
+        target_weight_kg = float(
+            target_weight
+        )
 
     else:
 
         target_weight_kg = (
             float(target_weight)
-            * 0.45359237
+            *
+            0.45359237
         )
 
 
@@ -807,7 +732,9 @@ if calculate:
     # HEIGHT IN METERS
     # -----------------------------------------------------
 
-    height_m = height_cm / 100
+    height_m = (
+        height_cm / 100
+    )
 
 
     # -----------------------------------------------------
@@ -843,8 +770,7 @@ if calculate:
 
 
     # -----------------------------------------------------
-    # BMR
-    # Mifflin-St Jeor
+    # BMR — MIFFLIN-ST JEOR
     # -----------------------------------------------------
 
     if sex == "Male":
@@ -876,7 +802,9 @@ if calculate:
     # TDEE
     # -----------------------------------------------------
 
-    activity_factor = activity_factors[activity]
+    activity_factor = (
+        activity_factors[activity]
+    )
 
     tdee = (
         bmr
@@ -903,7 +831,7 @@ if calculate:
 
 
     # -----------------------------------------------------
-    # IST DATE & TIME
+    # IST DATE AND TIME
     # -----------------------------------------------------
 
     now = datetime.now(
@@ -920,7 +848,7 @@ if calculate:
 
 
     # -----------------------------------------------------
-    # SAVE CALCULATION
+    # STORE CALCULATION
     # -----------------------------------------------------
 
     st.session_state.calculation = {
@@ -935,7 +863,8 @@ if calculate:
 
         "height_cm": height_cm,
 
-        "target_weight_kg": target_weight_kg,
+        "target_weight_kg":
+            target_weight_kg,
 
         "activity": activity,
 
@@ -944,15 +873,18 @@ if calculate:
 
         "bmi": bmi,
 
-        "bmi_category": bmi_category,
+        "bmi_category":
+            bmi_category,
 
         "bmr": bmr,
 
         "tdee": tdee,
 
-        "healthy_min": healthy_min,
+        "healthy_min":
+            healthy_min,
 
-        "healthy_max": healthy_max,
+        "healthy_max":
+            healthy_max,
 
         "date": date,
 
@@ -960,7 +892,7 @@ if calculate:
     }
 
 
-    # Reset plan/sheet state for new calculation
+    # Reset Google Sheet row for new calculation
 
     st.session_state.last_plan = None
 
@@ -983,7 +915,8 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # DASHBOARD — ROW 1
+    # DASHBOARD
+    # Native Streamlit components
     # =====================================================
 
     col1, col2 = st.columns(2)
@@ -991,130 +924,57 @@ if st.session_state.calculation is not None:
 
     with col1:
 
-        st.markdown(
-            f"""
-            <div class="result-card">
-
-                <div class="result-label">
-                    BMI
-                </div>
-
-                <div class="result-value">
-                    {data['bmi']:.1f}
-                </div>
-
-                <div class="result-sub">
-                    {data['bmi_category']}
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.metric(
+            label="BMI",
+            value=f"{data['bmi']:.1f}",
+            delta=data["bmi_category"],
+            delta_color="off"
         )
 
 
     with col2:
 
-        st.markdown(
-            f"""
-            <div class="result-card">
-
-                <div class="result-label">
-                    BMR
-                </div>
-
-                <div class="result-value">
-                    {data['bmr']:.0f}
-                </div>
-
-                <div class="result-sub">
-                    kcal/day
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.metric(
+            label="BMR",
+            value=f"{data['bmr']:.0f} kcal/day"
         )
 
-
-    # =====================================================
-    # DASHBOARD — ROW 2
-    # =====================================================
 
     col3, col4 = st.columns(2)
 
 
     with col3:
 
-        st.markdown(
-            f"""
-            <div class="result-card">
-
-                <div class="result-label">
-                    TDEE
-                </div>
-
-                <div class="result-value">
-                    {data['tdee']:.0f}
-                </div>
-
-                <div class="result-sub">
-                    kcal/day
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.metric(
+            label="TDEE",
+            value=f"{data['tdee']:.0f} kcal/day"
         )
 
 
     with col4:
 
-        st.markdown(
-            f"""
-            <div class="result-card">
-
-                <div class="result-label">
-                    Healthy Weight
-                </div>
-
-                <div class="result-value">
-                    {data['healthy_min']:.1f}
-                </div>
-
-                <div class="result-sub">
-                    to {data['healthy_max']:.1f} kg
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.metric(
+            label="Healthy Weight",
+            value=(
+                f"{data['healthy_min']:.1f}–"
+                f"{data['healthy_max']:.1f} kg"
+            )
         )
 
 
     # =====================================================
-    # HEALTHY WEIGHT RANGE
+    # HEALTHY WEIGHT
     # =====================================================
 
-    st.markdown(
-        f"""
-        <div class="info-card">
-
-            <b>🎯 Healthy weight range</b>
-            <br><br>
-
-            {data['healthy_min']:.1f}
-            –
-            {data['healthy_max']:.1f} kg
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.info(
+        f"🎯 **Healthy weight range:** "
+        f"{data['healthy_min']:.1f} – "
+        f"{data['healthy_max']:.1f} kg"
     )
 
 
     # =====================================================
-    # ACTIVITY LEVEL
+    # ACTIVITY
     # =====================================================
 
     st.markdown(
@@ -1151,9 +1011,11 @@ if st.session_state.calculation is not None:
     # CALORIE DEFICIT
     # =====================================================
 
-    deficit = calorie_deficits[
-        weight_loss_plan
-    ]
+    deficit = (
+        calorie_deficits[
+            weight_loss_plan
+        ]
+    )
 
 
     daily_calorie_target = max(
@@ -1163,7 +1025,7 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # WEIGHT TO LOSE
+    # WEIGHT DIFFERENCE
     # =====================================================
 
     weight_to_lose = (
@@ -1213,54 +1075,42 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # WEIGHT GOAL DISPLAY
+    # WEIGHT GOAL
     # =====================================================
 
     if weight_to_lose > 0:
 
-        weight_loss_text = (
+        st.subheader(
+            "📉 Weight-loss goal"
+        )
+
+        st.write(
+            f"**Current weight:** "
+            f"{data['weight_kg']:.1f} kg"
+        )
+
+        st.write(
+            f"**Target weight:** "
+            f"{data['target_weight_kg']:.1f} kg"
+        )
+
+        st.write(
+            f"**Weight to lose:** "
             f"{weight_to_lose:.1f} kg"
         )
 
-        time_text = (
-            f"{estimated_days:.0f} days "
-            f"({estimated_weeks:.1f} weeks / "
-            f"{estimated_months:.1f} months)"
-        )
 
-    elif weight_to_lose == 0:
+        # -------------------------------------------------
+        # GOAL BAR
+        # -------------------------------------------------
+        #
+        # At the initial calculation, progress is 0%.
+        # The bar represents actual progress only when
+        # a future weight-tracking feature is added.
+        #
+        # For now, show the size of the goal separately.
 
-        weight_loss_text = "0.0 kg"
-
-        time_text = (
-            "Target weight already reached"
-        )
-
-    else:
-
-        weight_to_gain = abs(
-            weight_to_lose
-        )
-
-        weight_loss_text = (
-            f"{weight_to_gain:.1f} kg to gain"
-        )
-
-        time_text = (
-            "Target weight is above current weight"
-        )
-
-
-    # =====================================================
-    # VISUAL WEIGHT-LOSS GOAL BAR
-    # =====================================================
-
-    if weight_to_lose > 0:
-
-        # This represents the size of the weight-loss goal,
-        # not actual progress already achieved.
-
-        goal_percent = (
+        goal_size_percent = (
             weight_to_lose
             /
             data["weight_kg"]
@@ -1268,50 +1118,23 @@ if st.session_state.calculation is not None:
             100
         )
 
-        goal_percent = min(
-            max(goal_percent, 0),
+        goal_size_percent = min(
+            max(goal_size_percent, 0),
             100
         )
 
-        st.markdown(
-            f"""
-            <div class="goal-card">
 
-                <div class="goal-title">
-                    📉 Weight-loss goal
-                </div>
-
-                <div class="goal-subtitle">
-                    {weight_to_lose:.1f} kg to lose
-                </div>
-
-                <div class="weight-bar-background">
-
-                    <div
-                        class="weight-bar-fill"
-                        style="width: {goal_percent:.1f}%;">
-                    </div>
-
-                </div>
-
-                <div class="weight-labels">
-
-                    <span>
-                        Current:
-                        {data['weight_kg']:.1f} kg
-                    </span>
-
-                    <span>
-                        Target:
-                        {data['target_weight_kg']:.1f} kg
-                    </span>
-
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.progress(
+            int(goal_size_percent)
         )
+
+
+        st.caption(
+            f"Your weight-loss goal is "
+            f"{goal_size_percent:.1f}% "
+            f"of your current body weight."
+        )
+
 
     elif weight_to_lose == 0:
 
@@ -1319,50 +1142,86 @@ if st.session_state.calculation is not None:
             "🎯 You are already at your target weight."
         )
 
+
     else:
 
+        weight_to_gain = abs(
+            weight_to_lose
+        )
+
         st.info(
-            "Your target weight is higher than your "
-            "current weight. The weight-loss bar is "
-            "therefore not displayed."
+            f"🎯 Your target weight is "
+            f"{weight_to_gain:.1f} kg above your "
+            f"current weight."
         )
 
 
     # =====================================================
-    # CALORIE / TIME INFORMATION
+    # DAILY CALORIE TARGET
     # =====================================================
 
-    st.markdown(
-        f"""
-        <div class="plan-card">
+    st.subheader(
+        "🔥 Daily calorie target"
+    )
 
-            <b>🔥 Daily calorie target</b>
-            <br>
-
-            {daily_calorie_target:.0f} kcal/day
-
-            <br><br>
-
-            <b>📉 Estimated weight change</b>
-            <br>
-
-            {weight_loss_text}
-
-            <br><br>
-
-            <b>⏱️ Estimated time</b>
-            <br>
-
-            {time_text}
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.metric(
+        label="Recommended daily calorie target",
+        value=f"{daily_calorie_target:.0f} kcal/day"
     )
 
 
     # =====================================================
-    # ADD WEIGHT LOSS DATA TO CALCULATION
+    # ESTIMATED WEIGHT LOSS
+    # =====================================================
+
+    if weight_to_lose > 0:
+
+        st.subheader(
+            "⏱️ Estimated weight-loss time"
+        )
+
+        col5, col6, col7 = st.columns(3)
+
+
+        with col5:
+
+            st.metric(
+                "Days",
+                f"{estimated_days:.0f}"
+            )
+
+
+        with col6:
+
+            st.metric(
+                "Weeks",
+                f"{estimated_weeks:.1f}"
+            )
+
+
+        with col7:
+
+            st.metric(
+                "Months",
+                f"{estimated_months:.1f}"
+            )
+
+
+        st.caption(
+            "This is an estimate based on an assumed "
+            "7,700 kcal energy deficit per kg of weight loss."
+        )
+
+
+    elif weight_to_lose == 0:
+
+        st.success(
+            "Target weight already reached."
+        )
+
+
+    # =====================================================
+    # SAVE WEIGHT MANAGEMENT DATA
     # =====================================================
 
     data["weight_loss_plan"] = (
@@ -1389,7 +1248,7 @@ if st.session_state.calculation is not None:
 
 
     # =====================================================
-    # SAVE TO GOOGLE SHEET
+    # GOOGLE SHEET
     # =====================================================
 
     try:
@@ -1519,7 +1378,7 @@ if st.session_state.calculation is not None:
 
 
         # -------------------------------------------------
-        # UPDATE PLAN WITHOUT CREATING NEW ROW
+        # CHANGE PLAN
         # -------------------------------------------------
 
         elif (
@@ -1565,8 +1424,8 @@ if st.session_state.calculation is not None:
 
     except Exception as e:
 
-        # Do not show technical Google Sheet
-        # errors to the visitor.
+        # Keep technical Google Sheet errors
+        # hidden from the visitor.
 
         print(
             "Google Sheet error:",

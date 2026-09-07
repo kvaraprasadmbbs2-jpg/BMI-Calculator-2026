@@ -8,9 +8,9 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 
 
-# =====================================================
-# PAGE CONFIGURATION
-# =====================================================
+# =========================================================
+# PAGE SETTINGS
+# =========================================================
 
 st.set_page_config(
     page_title="BMI & Weight Management Calculator",
@@ -19,9 +19,9 @@ st.set_page_config(
 )
 
 
-# =====================================================
+# =========================================================
 # CUSTOM CSS
-# =====================================================
+# =========================================================
 
 st.markdown(
     """
@@ -33,15 +33,17 @@ st.markdown(
 
     .result-card {
         padding: 18px;
-        border-radius: 12px;
+        border-radius: 14px;
         border: 1px solid rgba(128, 128, 128, 0.25);
         text-align: center;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+        min-height: 120px;
     }
 
     .result-value {
         font-size: 28px;
         font-weight: 700;
+        margin-top: 5px;
     }
 
     .result-label {
@@ -51,15 +53,71 @@ st.markdown(
 
     .result-sub {
         font-size: 13px;
-        margin-top: 4px;
+        margin-top: 5px;
+        opacity: 0.8;
     }
 
     .info-card {
-        padding: 15px;
+        padding: 18px;
+        border-radius: 14px;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+
+    .goal-card {
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .goal-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .goal-subtitle {
+        font-size: 14px;
+        opacity: 0.75;
+        margin-bottom: 12px;
+    }
+
+    .weight-bar-background {
+        width: 100%;
+        height: 22px;
         border-radius: 12px;
+        background: rgba(128, 128, 128, 0.18);
+        overflow: hidden;
+        margin-top: 12px;
+        margin-bottom: 10px;
+    }
+
+    .weight-bar-fill {
+        height: 100%;
+        border-radius: 12px;
+        background: linear-gradient(
+            90deg,
+            #4CAF50,
+            #8BC34A
+        );
+    }
+
+    .weight-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        opacity: 0.8;
+    }
+
+    .plan-card {
+        padding: 18px;
+        border-radius: 14px;
         border: 1px solid rgba(128, 128, 128, 0.25);
         margin-top: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
 
     </style>
@@ -68,9 +126,9 @@ st.markdown(
 )
 
 
-# =====================================================
+# =========================================================
 # GOOGLE SHEET CONNECTION
-# =====================================================
+# =========================================================
 
 @st.cache_resource
 def get_google_sheet():
@@ -87,18 +145,16 @@ def get_google_sheet():
 
     client = gspread.authorize(credentials)
 
-    spreadsheet = client.open(
-        "BMI Calculator Visitor Log"
-    )
+    spreadsheet = client.open("BMI Calculator Visitor Log")
 
     worksheet = spreadsheet.sheet1
 
     return worksheet
 
 
-# =====================================================
-# PDF CREATION
-# =====================================================
+# =========================================================
+# PDF REPORT
+# =========================================================
 
 def create_pdf(data):
 
@@ -113,9 +169,9 @@ def create_pdf(data):
 
     y = height - 25 * mm
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
     # TITLE
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     pdf.setFont(
         "Helvetica-Bold",
@@ -130,9 +186,9 @@ def create_pdf(data):
 
     y -= 15 * mm
 
-    # -------------------------------------------------
-    # PERSONAL DETAILS
-    # -------------------------------------------------
+    # -----------------------------------------------------
+    # BASIC INFORMATION
+    # -----------------------------------------------------
 
     pdf.setFont(
         "Helvetica",
@@ -163,9 +219,9 @@ def create_pdf(data):
 
     y -= 12 * mm
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
     # MEASUREMENTS
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     pdf.setFont(
         "Helvetica-Bold",
@@ -217,9 +273,9 @@ def create_pdf(data):
 
     y -= 12 * mm
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
     # RESULTS
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     pdf.setFont(
         "Helvetica-Bold",
@@ -287,9 +343,9 @@ def create_pdf(data):
 
     y -= 12 * mm
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
     # WEIGHT MANAGEMENT
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     pdf.setFont(
         "Helvetica-Bold",
@@ -337,8 +393,7 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Estimated Days: "
-        f"{data['estimated_days']}"
+        f"Estimated Days: {data['estimated_days']}"
     )
 
     y -= 7 * mm
@@ -346,8 +401,7 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Estimated Weeks: "
-        f"{data['estimated_weeks']:.1f}"
+        f"Estimated Weeks: {data['estimated_weeks']:.1f}"
     )
 
     y -= 7 * mm
@@ -355,15 +409,14 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        f"Estimated Months: "
-        f"{data['estimated_months']:.1f}"
+        f"Estimated Months: {data['estimated_months']:.1f}"
     )
 
     y -= 12 * mm
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
     # HEALTHY WEIGHT
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     pdf.setFont(
         "Helvetica-Bold",
@@ -392,9 +445,9 @@ def create_pdf(data):
 
     y -= 18 * mm
 
-    # -------------------------------------------------
+    # -----------------------------------------------------
     # DISCLAIMER
-    # -------------------------------------------------
+    # -----------------------------------------------------
 
     pdf.setFont(
         "Helvetica",
@@ -404,15 +457,13 @@ def create_pdf(data):
     pdf.drawString(
         20 * mm,
         y,
-        "This calculator provides an estimate "
-        "for educational purposes."
+        "This calculator provides an estimate for educational purposes."
     )
 
     pdf.drawString(
         20 * mm,
         y - 5 * mm,
-        "Individual calorie and weight-management "
-        "needs may vary."
+        "Individual calorie and weight-management needs may vary."
     )
 
     pdf.save()
@@ -420,9 +471,9 @@ def create_pdf(data):
     return file_path
 
 
-# =====================================================
-# ACTIVITY LEVEL DESCRIPTIONS
-# =====================================================
+# =========================================================
+# ACTIVITY LEVELS
+# =========================================================
 
 activity_descriptions = {
 
@@ -443,10 +494,6 @@ activity_descriptions = {
 }
 
 
-# =====================================================
-# ACTIVITY FACTORS
-# =====================================================
-
 activity_factors = {
 
     "Sedentary": 1.20,
@@ -461,9 +508,9 @@ activity_factors = {
 }
 
 
-# =====================================================
-# CALORIE DEFICITS
-# =====================================================
+# =========================================================
+# WEIGHT LOSS PLANS
+# =========================================================
 
 calorie_deficits = {
 
@@ -475,23 +522,22 @@ calorie_deficits = {
 }
 
 
-# =====================================================
+# =========================================================
 # TITLE
-# =====================================================
+# =========================================================
 
 st.title(
     "🩺 BMI & Weight Management Calculator"
 )
 
 st.caption(
-    "Calculate BMI, BMR, TDEE and estimate "
-    "your daily calorie requirement."
+    "Calculate BMI, BMR, TDEE and estimate your daily calorie requirement."
 )
 
 
-# =====================================================
+# =========================================================
 # USER INPUTS
-# =====================================================
+# =========================================================
 
 name = st.text_input(
     "Enter your name"
@@ -509,24 +555,19 @@ age = st.number_input(
 
 sex = st.selectbox(
     "Select sex",
-    [
-        "Male",
-        "Female"
-    ]
+    ["Male", "Female"]
 )
 
 
-# =====================================================
+# =========================================================
 # WEIGHT
-# =====================================================
+# =========================================================
 
 weight_unit = st.selectbox(
     "Select weight unit",
-    [
-        "kg",
-        "lb"
-    ]
+    ["kg", "lb"]
 )
+
 
 weight = st.number_input(
     f"Enter weight ({weight_unit})",
@@ -537,16 +578,13 @@ weight = st.number_input(
 )
 
 
-# =====================================================
+# =========================================================
 # HEIGHT
-# =====================================================
+# =========================================================
 
 height_unit = st.selectbox(
     "Select height unit",
-    [
-        "cm",
-        "ft/in"
-    ]
+    ["cm", "ft/in"]
 )
 
 
@@ -584,17 +622,15 @@ else:
     height_cm_input = None
 
 
-# =====================================================
+# =========================================================
 # TARGET WEIGHT
-# =====================================================
+# =========================================================
 
 target_weight_unit = st.selectbox(
     "Select target weight unit",
-    [
-        "kg",
-        "lb"
-    ]
+    ["kg", "lb"]
 )
+
 
 target_weight = st.number_input(
     f"Enter target weight ({target_weight_unit})",
@@ -605,9 +641,9 @@ target_weight = st.number_input(
 )
 
 
-# =====================================================
+# =========================================================
 # ACTIVITY LEVEL
-# =====================================================
+# =========================================================
 
 activity = st.selectbox(
     "Select activity level",
@@ -622,16 +658,17 @@ activity = st.selectbox(
 )
 
 
-# Dynamic activity description
+# Single-line activity description
+
 st.markdown(
     f"**Select activity level:** {activity} "
     f"*({activity_descriptions[activity]})*"
 )
 
 
-# =====================================================
+# =========================================================
 # SESSION STATE
-# =====================================================
+# =========================================================
 
 if "calculation" not in st.session_state:
 
@@ -648,9 +685,9 @@ if "sheet_row" not in st.session_state:
     st.session_state.sheet_row = None
 
 
-# =====================================================
+# =========================================================
 # CALCULATE BUTTON
-# =====================================================
+# =========================================================
 
 calculate = st.button(
     "🧮 Calculate",
@@ -658,11 +695,15 @@ calculate = st.button(
 )
 
 
+# =========================================================
+# CALCULATION
+# =========================================================
+
 if calculate:
 
-    # =================================================
+    # -----------------------------------------------------
     # VALIDATION
-    # =================================================
+    # -----------------------------------------------------
 
     if not name.strip():
 
@@ -700,9 +741,9 @@ if calculate:
         st.stop()
 
 
-    # =================================================
-    # WEIGHT CONVERSION
-    # =================================================
+    # -----------------------------------------------------
+    # WEIGHT → KG
+    # -----------------------------------------------------
 
     if weight_unit == "kg":
 
@@ -710,14 +751,12 @@ if calculate:
 
     else:
 
-        weight_kg = (
-            float(weight) * 0.45359237
-        )
+        weight_kg = float(weight) * 0.45359237
 
 
-    # =================================================
-    # HEIGHT CONVERSION
-    # =================================================
+    # -----------------------------------------------------
+    # HEIGHT → CM
+    # -----------------------------------------------------
 
     if height_unit == "cm":
 
@@ -729,9 +768,7 @@ if calculate:
 
             st.stop()
 
-        height_cm = float(
-            height_cm_input
-        )
+        height_cm = float(height_cm_input)
 
     else:
 
@@ -745,42 +782,48 @@ if calculate:
 
         height_cm = (
             float(height_ft) * 30.48
-            + float(height_in) * 2.54
+            +
+            float(height_in) * 2.54
         )
 
 
-    # =================================================
-    # TARGET WEIGHT CONVERSION
-    # =================================================
+    # -----------------------------------------------------
+    # TARGET WEIGHT → KG
+    # -----------------------------------------------------
 
     if target_weight_unit == "kg":
 
-        target_weight_kg = float(
-            target_weight
-        )
+        target_weight_kg = float(target_weight)
 
     else:
 
         target_weight_kg = (
-            float(target_weight) * 0.45359237
+            float(target_weight)
+            * 0.45359237
         )
 
 
-    # =================================================
+    # -----------------------------------------------------
     # HEIGHT IN METERS
-    # =================================================
+    # -----------------------------------------------------
 
     height_m = height_cm / 100
 
 
-    # =================================================
+    # -----------------------------------------------------
     # BMI
-    # =================================================
+    # -----------------------------------------------------
 
-    bmi = weight_kg / (
-        height_m ** 2
+    bmi = (
+        weight_kg
+        /
+        (height_m ** 2)
     )
 
+
+    # -----------------------------------------------------
+    # BMI CATEGORY
+    # -----------------------------------------------------
 
     if bmi < 18.5:
 
@@ -799,65 +842,69 @@ if calculate:
         bmi_category = "Obesity"
 
 
-    # =================================================
+    # -----------------------------------------------------
     # BMR
-    # Mifflin-St Jeor Equation
-    # =================================================
+    # Mifflin-St Jeor
+    # -----------------------------------------------------
 
     if sex == "Male":
 
         bmr = (
             10 * weight_kg
-            + 6.25 * height_cm
-            - 5 * int(age)
-            + 5
+            +
+            6.25 * height_cm
+            -
+            5 * int(age)
+            +
+            5
         )
 
     else:
 
         bmr = (
             10 * weight_kg
-            + 6.25 * height_cm
-            - 5 * int(age)
-            - 161
+            +
+            6.25 * height_cm
+            -
+            5 * int(age)
+            -
+            161
         )
 
 
-    # =================================================
-    # ACTIVITY FACTOR
-    # =================================================
-
-    activity_factor = (
-        activity_factors[activity]
-    )
-
-
-    # =================================================
+    # -----------------------------------------------------
     # TDEE
-    # =================================================
+    # -----------------------------------------------------
+
+    activity_factor = activity_factors[activity]
 
     tdee = (
-        bmr * activity_factor
+        bmr
+        *
+        activity_factor
     )
 
 
-    # =================================================
+    # -----------------------------------------------------
     # HEALTHY WEIGHT RANGE
-    # BMI 18.5 - 24.9
-    # =================================================
+    # -----------------------------------------------------
 
     healthy_min = (
-        18.5 * (height_m ** 2)
+        18.5
+        *
+        (height_m ** 2)
     )
 
     healthy_max = (
-        24.9 * (height_m ** 2)
+        24.9
+        *
+        (height_m ** 2)
     )
 
 
-    # =================================================
+    # -----------------------------------------------------
     # IST DATE & TIME
-    # =================================================
+    # -----------------------------------------------------
 
     now = datetime.now(
         ZoneInfo("Asia/Kolkata")
@@ -872,9 +919,9 @@ if calculate:
     )
 
 
-    # =================================================
-    # STORE CALCULATION
-    # =================================================
+    # -----------------------------------------------------
+    # SAVE CALCULATION
+    # -----------------------------------------------------
 
     st.session_state.calculation = {
 
@@ -888,8 +935,7 @@ if calculate:
 
         "height_cm": height_cm,
 
-        "target_weight_kg":
-            target_weight_kg,
+        "target_weight_kg": target_weight_kg,
 
         "activity": activity,
 
@@ -898,18 +944,15 @@ if calculate:
 
         "bmi": bmi,
 
-        "bmi_category":
-            bmi_category,
+        "bmi_category": bmi_category,
 
         "bmr": bmr,
 
         "tdee": tdee,
 
-        "healthy_min":
-            healthy_min,
+        "healthy_min": healthy_min,
 
-        "healthy_max":
-            healthy_max,
+        "healthy_max": healthy_max,
 
         "date": date,
 
@@ -917,20 +960,20 @@ if calculate:
     }
 
 
-    # Start a new sheet record
+    # Reset plan/sheet state for new calculation
+
     st.session_state.last_plan = None
 
     st.session_state.sheet_row = None
 
 
-# =====================================================
+# =========================================================
 # DISPLAY RESULTS
-# =====================================================
+# =========================================================
 
 if st.session_state.calculation is not None:
 
     data = st.session_state.calculation
-
 
     st.divider()
 
@@ -939,9 +982,9 @@ if st.session_state.calculation is not None:
     )
 
 
-    # =================================================
-    # PROFESSIONAL RESULT DASHBOARD
-    # =================================================
+    # =====================================================
+    # DASHBOARD — ROW 1
+    # =====================================================
 
     col1, col2 = st.columns(2)
 
@@ -994,6 +1037,10 @@ if st.session_state.calculation is not None:
         )
 
 
+    # =====================================================
+    # DASHBOARD — ROW 2
+    # =====================================================
+
     col3, col4 = st.columns(2)
 
 
@@ -1024,19 +1071,19 @@ if st.session_state.calculation is not None:
     with col4:
 
         st.markdown(
-            """
+            f"""
             <div class="result-card">
 
                 <div class="result-label">
-                    BMI Status
+                    Healthy Weight
                 </div>
 
                 <div class="result-value">
-                    ✓
+                    {data['healthy_min']:.1f}
                 </div>
 
                 <div class="result-sub">
-                    Assessment complete
+                    to {data['healthy_max']:.1f} kg
                 </div>
 
             </div>
@@ -1045,19 +1092,20 @@ if st.session_state.calculation is not None:
         )
 
 
-    # =================================================
+    # =====================================================
     # HEALTHY WEIGHT RANGE
-    # =================================================
+    # =====================================================
 
     st.markdown(
         f"""
         <div class="info-card">
 
-        <b>🎯 Healthy weight range</b><br><br>
+            <b>🎯 Healthy weight range</b>
+            <br><br>
 
-        {data['healthy_min']:.1f}
-        –
-        {data['healthy_max']:.1f} kg
+            {data['healthy_min']:.1f}
+            –
+            {data['healthy_max']:.1f} kg
 
         </div>
         """,
@@ -1065,9 +1113,9 @@ if st.session_state.calculation is not None:
     )
 
 
-    # =================================================
+    # =====================================================
     # ACTIVITY LEVEL
-    # =================================================
+    # =====================================================
 
     st.markdown(
         f"**Select activity level:** "
@@ -1076,9 +1124,9 @@ if st.session_state.calculation is not None:
     )
 
 
-    # =================================================
+    # =====================================================
     # WEIGHT LOSS PLAN
-    # =================================================
+    # =====================================================
 
     st.subheader(
         "⚖️ Select your weight loss plan"
@@ -1099,18 +1147,14 @@ if st.session_state.calculation is not None:
     )
 
 
-    # =================================================
+    # =====================================================
     # CALORIE DEFICIT
-    # =================================================
+    # =====================================================
 
     deficit = calorie_deficits[
         weight_loss_plan
     ]
 
-
-    # =================================================
-    # DAILY CALORIE TARGET
-    # =================================================
 
     daily_calorie_target = max(
         data["tdee"] - deficit,
@@ -1118,36 +1162,45 @@ if st.session_state.calculation is not None:
     )
 
 
-    # =================================================
-    # WEIGHT DIFFERENCE
-    # =================================================
+    # =====================================================
+    # WEIGHT TO LOSE
+    # =====================================================
 
     weight_to_lose = (
         data["weight_kg"]
-        - data["target_weight_kg"]
+        -
+        data["target_weight_kg"]
     )
 
 
-    # =================================================
-    # ESTIMATED WEIGHT LOSS TIME
-    # =================================================
+    # =====================================================
+    # ESTIMATED TIME
+    # =====================================================
 
     if weight_to_lose > 0:
 
         total_calorie_deficit = (
-            weight_to_lose * 7700
+            weight_to_lose
+            *
+            7700
         )
 
         estimated_days = (
-            total_calorie_deficit / deficit
+            total_calorie_deficit
+            /
+            deficit
         )
 
         estimated_weeks = (
-            estimated_days / 7
+            estimated_days
+            /
+            7
         )
 
         estimated_months = (
-            estimated_days / 30.44
+            estimated_days
+            /
+            30.44
         )
 
     else:
@@ -1159,9 +1212,9 @@ if st.session_state.calculation is not None:
         estimated_months = 0
 
 
-    # =================================================
-    # WEIGHT LOSS RESULTS
-    # =================================================
+    # =====================================================
+    # WEIGHT GOAL DISPLAY
+    # =====================================================
 
     if weight_to_lose > 0:
 
@@ -1179,38 +1232,128 @@ if st.session_state.calculation is not None:
 
         weight_loss_text = "0.0 kg"
 
-        time_text = "Target weight already reached"
+        time_text = (
+            "Target weight already reached"
+        )
 
     else:
 
+        weight_to_gain = abs(
+            weight_to_lose
+        )
+
         weight_loss_text = (
-            f"{abs(weight_to_lose):.1f} kg above target"
+            f"{weight_to_gain:.1f} kg to gain"
         )
 
         time_text = (
-            "Target weight is below current weight"
+            "Target weight is above current weight"
         )
 
 
+    # =====================================================
+    # VISUAL WEIGHT-LOSS GOAL BAR
+    # =====================================================
+
+    if weight_to_lose > 0:
+
+        # This represents the size of the weight-loss goal,
+        # not actual progress already achieved.
+
+        goal_percent = (
+            weight_to_lose
+            /
+            data["weight_kg"]
+            *
+            100
+        )
+
+        goal_percent = min(
+            max(goal_percent, 0),
+            100
+        )
+
+        st.markdown(
+            f"""
+            <div class="goal-card">
+
+                <div class="goal-title">
+                    📉 Weight-loss goal
+                </div>
+
+                <div class="goal-subtitle">
+                    {weight_to_lose:.1f} kg to lose
+                </div>
+
+                <div class="weight-bar-background">
+
+                    <div
+                        class="weight-bar-fill"
+                        style="width: {goal_percent:.1f}%;">
+                    </div>
+
+                </div>
+
+                <div class="weight-labels">
+
+                    <span>
+                        Current:
+                        {data['weight_kg']:.1f} kg
+                    </span>
+
+                    <span>
+                        Target:
+                        {data['target_weight_kg']:.1f} kg
+                    </span>
+
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    elif weight_to_lose == 0:
+
+        st.success(
+            "🎯 You are already at your target weight."
+        )
+
+    else:
+
+        st.info(
+            "Your target weight is higher than your "
+            "current weight. The weight-loss bar is "
+            "therefore not displayed."
+        )
+
+
+    # =====================================================
+    # CALORIE / TIME INFORMATION
+    # =====================================================
+
     st.markdown(
         f"""
-        <div class="info-card">
+        <div class="plan-card">
 
-        <b>🔥 Daily calorie target</b><br>
+            <b>🔥 Daily calorie target</b>
+            <br>
 
-        {daily_calorie_target:.0f} kcal/day
+            {daily_calorie_target:.0f} kcal/day
 
-        <br><br>
+            <br><br>
 
-        <b>📉 Estimated weight loss</b><br>
+            <b>📉 Estimated weight change</b>
+            <br>
 
-        {weight_loss_text}
+            {weight_loss_text}
 
-        <br><br>
+            <br><br>
 
-        <b>⏱️ Estimated time</b><br>
+            <b>⏱️ Estimated time</b>
+            <br>
 
-        {time_text}
+            {time_text}
 
         </div>
         """,
@@ -1218,9 +1361,9 @@ if st.session_state.calculation is not None:
     )
 
 
-    # =================================================
-    # UPDATE DATA DICTIONARY
-    # =================================================
+    # =====================================================
+    # ADD WEIGHT LOSS DATA TO CALCULATION
+    # =====================================================
 
     data["weight_loss_plan"] = (
         weight_loss_plan
@@ -1230,31 +1373,33 @@ if st.session_state.calculation is not None:
         daily_calorie_target
     )
 
-    data["estimated_days"] = (
-        round(estimated_days)
+    data["estimated_days"] = round(
+        estimated_days
     )
 
-    data["estimated_weeks"] = (
-        round(estimated_weeks, 1)
+    data["estimated_weeks"] = round(
+        estimated_weeks,
+        1
     )
 
-    data["estimated_months"] = (
-        round(estimated_months, 1)
+    data["estimated_months"] = round(
+        estimated_months,
+        1
     )
 
 
-    # =================================================
-    # GOOGLE SHEET AUTOMATIC SAVE / UPDATE
-    # =================================================
+    # =====================================================
+    # SAVE TO GOOGLE SHEET
+    # =====================================================
 
     try:
 
         worksheet = get_google_sheet()
 
 
-        # =================================================
+        # -------------------------------------------------
         # FIRST SAVE
-        # =================================================
+        # -------------------------------------------------
 
         if st.session_state.sheet_row is None:
 
@@ -1317,19 +1462,18 @@ if st.session_state.calculation is not None:
             ]
 
 
-            # -------------------------------------------------
-            # Append row
-            # -------------------------------------------------
-
             result = worksheet.append_row(
+
                 row,
+
                 value_input_option="USER_ENTERED",
+
                 include_values_in_response=True
             )
 
 
             # -------------------------------------------------
-            # Determine the actual appended row
+            # FIND ACTUAL SAVED ROW
             # -------------------------------------------------
 
             if (
@@ -1338,14 +1482,9 @@ if st.session_state.calculation is not None:
                 and result["updates"].get("updatedRange")
             ):
 
-                updated_range = result[
-                    "updates"
-                ][
-                    "updatedRange"
-                ]
-
-                # Example:
-                # Sheet1!A15:Q15
+                updated_range = (
+                    result["updates"]["updatedRange"]
+                )
 
                 range_part = (
                     updated_range.split("!")[-1]
@@ -1369,14 +1508,8 @@ if st.session_state.calculation is not None:
 
             else:
 
-                # Fallback: find the last row
-                # only if append response does
-                # not contain updatedRange.
-
-                st.session_state.sheet_row = (
-                    len(
-                        worksheet.get_all_values()
-                    )
+                st.session_state.sheet_row = len(
+                    worksheet.get_all_values()
                 )
 
 
@@ -1385,13 +1518,14 @@ if st.session_state.calculation is not None:
             )
 
 
-        # =================================================
-        # UPDATE EXISTING ROW
-        # =================================================
+        # -------------------------------------------------
+        # UPDATE PLAN WITHOUT CREATING NEW ROW
+        # -------------------------------------------------
 
         elif (
             st.session_state.last_plan
-            != weight_loss_plan
+            !=
+            weight_loss_plan
         ):
 
             row_number = (
@@ -1400,29 +1534,23 @@ if st.session_state.calculation is not None:
 
 
             worksheet.update(
+
                 f"M{row_number}:Q{row_number}",
+
                 [[
 
                     data["weight_loss_plan"],
 
                     round(
-                        data[
-                            "daily_calorie_target"
-                        ],
+                        data["daily_calorie_target"],
                         0
                     ),
 
-                    data[
-                        "estimated_days"
-                    ],
+                    data["estimated_days"],
 
-                    data[
-                        "estimated_weeks"
-                    ],
+                    data["estimated_weeks"],
 
-                    data[
-                        "estimated_months"
-                    ]
+                    data["estimated_months"]
 
                 ]],
 
@@ -1437,8 +1565,8 @@ if st.session_state.calculation is not None:
 
     except Exception as e:
 
-        # Do not show technical Google
-        # Sheet errors to app visitors.
+        # Do not show technical Google Sheet
+        # errors to the visitor.
 
         print(
             "Google Sheet error:",
@@ -1446,11 +1574,13 @@ if st.session_state.calculation is not None:
         )
 
 
-    # =================================================
+    # =====================================================
     # PDF REPORT
-    # =================================================
+    # =====================================================
 
-    pdf_file = create_pdf(data)
+    pdf_file = create_pdf(
+        data
+    )
 
 
     with open(
@@ -1474,9 +1604,9 @@ if st.session_state.calculation is not None:
         )
 
 
-# =====================================================
+# =========================================================
 # FOOTER
-# =====================================================
+# =========================================================
 
 st.divider()
 
